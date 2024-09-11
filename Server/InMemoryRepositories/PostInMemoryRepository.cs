@@ -5,26 +5,16 @@ namespace InMemoryRepositories;
 
 public class PostInMemoryRepository : IPostRepository
 {
-    public List<Post> posts;
-    
-    //Constructor
+    private readonly List<Post> posts = new();
 
     public PostInMemoryRepository()
     {
-        posts = new List<Post>();
-        CreateInitialPost();
-    }
-    
-    //DummyData
-
-    private void CreateInitialPost()
-    {
-        posts.AddRange(new List<Post>
-        {
-            new Post{Body = "Just finished an intense workout session! Feeling stronger every day. Stay consistent, and the results will follow.", Title = "Fitness", Id = 1, UserId = 1},
-            new Post{Body = "Tried out this new recipe today, and it was a hit! Nothing beats a home-cooked meal with fresh ingredients.", Title = "Recipe", Id = 2, UserId = 2},
-            new Post{Body = "Excited to announce our latest update! We've enhanced the user experience with smoother navigation and faster load times. Stay tuned for more!", Title = "Updates", Id = 3, UserId = 3}
-        });
+        _ = AddAsync(new Post("Gym #1", "Today i had leg day, never again!.", 1)).Result;
+        _ = AddAsync(new Post("Gym #2", "I almost broke my spine doing squads with weights.", 1)).Result;
+        _ = AddAsync(new Post("DNP", "C# seems to be quite understandable.", 3)).Result;
+        _ = AddAsync(new Post("Recipe", "Tried out this new recipe today, and it was a hit! Nothing beats a home-cooked meal with fresh ingredients.", 2)).Result;
+        _ = AddAsync(new Post("A new friend", "In the morning a saw a bear hanging around my house.", 4)).Result;
+        _ = AddAsync(new Post("Any books?", "Can u guys share with some captivant books?", 3)).Result;
     }
 
     public Task<Post> AddAsync(Post post)
@@ -38,39 +28,39 @@ public class PostInMemoryRepository : IPostRepository
 
     public Task UpdateAsync(Post post)
     {
-        Post ? existingPost = posts.SingleOrDefault(p => p.Id == post.Id);
+        Post? existingPost = posts.SingleOrDefault(p => p.Id == post.Id);
         if (existingPost is null)
         {
-            throw new InvalidOperationException(
-                $"Post with ID '{post.Id}' was not found");
+            throw new InvalidOperationException($"Post with ID '{post.Id}' not found");
         }
+
         posts.Remove(existingPost);
         posts.Add(post);
+
         return Task.CompletedTask;
     }
 
     public Task DeleteAsync(int id)
     {
-        Post? postToRemove = posts.SingleOrDefault(p => p.Id == id);
+        var postToRemove = posts.SingleOrDefault(p => p.Id == id);
         if (postToRemove is null)
         {
-            throw new InvalidOperationException(
-                $"Post with ID '{id}' was not found");
+            throw new InvalidOperationException($"Post with ID '{id}' not found");
         }
+
         posts.Remove(postToRemove);
         return Task.CompletedTask;
     }
 
     public Task<Post> GetSingleAsync(int id)
     {
-        Post? post = posts.SingleOrDefault(p => p.Id == id);
+        var post = posts.SingleOrDefault(p => p.Id == id);
         if (post is null)
         {
-            throw new InvalidOperationException(
-                $"Post with ID '{id}' was not found");
+            throw new InvalidOperationException($"Post with ID '{id}' not found");
         }
+
         return Task.FromResult(post);
-        
     }
 
     public IQueryable<Post> GetManyAsync()

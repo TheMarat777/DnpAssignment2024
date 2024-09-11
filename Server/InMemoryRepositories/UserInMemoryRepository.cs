@@ -5,31 +5,20 @@ namespace InMemoryRepositories;
 
 public class UserInMemoryRepository : IUserRepository
 {
-    public List<User> users;
-    
-    //Constructor
+    private readonly List<User> users = new();
+
     public UserInMemoryRepository()
     {
-        users = new List<User>();
-        CreateInitialUsers();
+        _ = AddAsync(new User("marat", "1234")).Result;
+        _ = AddAsync(new User("patrik", "4321")).Result;
+        _ = AddAsync(new User("tomas", "1243")).Result;
+        _ = AddAsync(new User("sebo", "2143")).Result;
     }
 
-    //DummyData
-
-    private void CreateInitialUsers()
-    {
-        users.AddRange(new List<User>
-        {
-            new User{Id = 1, Password = "marat123", Username = "Marat"},
-            new User{Id = 2, Password = "patrik321", Username = "Patrik"},
-            new User{Id = 3, Password = "Tomas969", Username = "Tomas"},
-        });
-    }
-    
     public Task<User> AddAsync(User user)
     {
         user.Id = users.Any()
-            ? users.Max(p => p.Id) + 1
+            ? users.Max(u => u.Id) + 1
             : 1;
         users.Add(user);
         return Task.FromResult(user);
@@ -37,43 +26,43 @@ public class UserInMemoryRepository : IUserRepository
 
     public Task UpdateAsync(User user)
     {
-        User ? existingUser = users.SingleOrDefault(p => p.Id == user.Id);
+        User? existingUser = users.SingleOrDefault(u => u.Id == user.Id);
         if (existingUser is null)
         {
-            throw new InvalidOperationException(
-                $"User with ID '{user.Id}' was not found");
+            throw new InvalidOperationException($"User with ID '{user.Id}' not found");
         }
+
         users.Remove(existingUser);
         users.Add(user);
+
         return Task.CompletedTask;
     }
 
     public Task DeleteAsync(int id)
     {
-        User ? userToRemove = users.SingleOrDefault(p => p.Id == id);
+        var userToRemove = users.SingleOrDefault(u => u.Id == id);
         if (userToRemove is null)
         {
-            throw new InvalidOperationException(
-                $"User with ID '{id}' was not found");
+            throw new InvalidOperationException($"User with ID '{id}' not found");
         }
+
         users.Remove(userToRemove);
         return Task.CompletedTask;
     }
 
     public Task<User> GetSingleAsync(int id)
     {
-        User ? user = users.SingleOrDefault(p => p.Id == id);
+        var user = users.SingleOrDefault(u => u.Id == id);
         if (user is null)
         {
-            throw new InvalidOperationException(
-                $"User with ID '{id}' was not found");
+            throw new InvalidOperationException($"User with ID '{id}' not found");
         }
+
         return Task.FromResult(user);
-        
     }
 
-    public IQueryable<User> GetManyAsync()
+    public Task<List<User>> GetManyAsync()
     {
-        return users.AsQueryable();
+        return Task.FromResult(users.ToList()); 
     }
 }
