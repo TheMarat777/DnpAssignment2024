@@ -1,6 +1,7 @@
 using RepositoryContracts;
 
 namespace CLI.UI.ManageComments;
+    
     public class ManageCommentsView
     {
         private readonly ICommentRepository commentRepository;

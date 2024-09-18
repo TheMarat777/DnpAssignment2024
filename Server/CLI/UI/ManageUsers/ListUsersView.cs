@@ -12,7 +12,7 @@ namespace CLI.UI.ManageUsers;
 
         public async Task ShowAsync()
         {
-            var users = await userRepository.GetManyAsync();
+            var users = await Task.Run(() => userRepository.GetManyAsync().ToList());
             if (users.Any())
             {
                 Console.WriteLine("\nUser list: ");
