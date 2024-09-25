@@ -122,6 +122,5 @@ public class CommentFileRepository : ICommentRepository
         {
             throw new InvalidDataException($"Comment with id {comment.Id} could not be found.");
         }
-        
     }
-}
+}  
