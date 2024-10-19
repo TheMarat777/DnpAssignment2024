@@ -50,8 +50,7 @@ public class PostFileRepository : IPostRepository
     {
         string postsAsJson = await File.ReadAllTextAsync(filePath);
         List<Post> posts = JsonSerializer.Deserialize<List<Post>>(postsAsJson) !;
-        int maxId = posts.Count > 0 ? posts.Max(p => p.Id) : 1;
-        post.Id = maxId + 1;
+        post.Id = posts.Count > 0 ? posts.Max(p => p.Id) +1 : 1;
         posts.Add(post);
         postsAsJson = JsonSerializer.Serialize(posts);
         await File.WriteAllTextAsync(filePath, postsAsJson);
@@ -89,7 +88,7 @@ public class PostFileRepository : IPostRepository
         }
     }
 
-    public IQueryable<Post> GetManyAsync()
+    public async Task<IEnumerable<Post>> GetManyAsync()
     {
         try
         {
@@ -107,7 +106,7 @@ public class PostFileRepository : IPostRepository
         }
     }
 
-    public async Task UpdateAsync(Post post)
+    public async Task<Post> UpdateAsync(Post post)
     {
         var posts = await LoadPostsAsync();
         var existingPost = posts.SingleOrDefault(p => p.Id == post.Id);
@@ -115,7 +114,7 @@ public class PostFileRepository : IPostRepository
         if (existingPost != null)
         {
             existingPost.Title = post.Title;
-            existingPost.Body = post.Body;
+            existingPost.Content = post.Content;
             existingPost.UserId = post.UserId;
             
             await SavePostsAsync(posts);
@@ -124,5 +123,6 @@ public class PostFileRepository : IPostRepository
         {
             throw new InvalidOperationException($"Post with id {post.Id} was not found");
         }
+        return existingPost;
     }
 }

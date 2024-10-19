@@ -55,8 +55,7 @@ public class UserFileRepository : IUserRepository
     {
         string usersAsJson = await File.ReadAllTextAsync(filePath);
         List<User> users = JsonSerializer.Deserialize<List<User>>(usersAsJson) !;
-        int maxId = users.Count > 0 ? users.Max(x => x.Id) : 1;
-        user.Id = maxId + 1;
+        user.Id = users.Count > 0 ? users.Max(x => x.Id) +1 : 1;
         users.Add(user);
         usersAsJson = JsonSerializer.Serialize(users);
         await File.WriteAllTextAsync(filePath, usersAsJson);
@@ -79,7 +78,7 @@ public class UserFileRepository : IUserRepository
         }
     }
 
-    public async Task<User?> GetSingleAsync(int userId)
+    public async Task<User?> GetSingleAsync(int userId) //calling user by id
     {
         var users = await LoadUsersAsync();
         var user = users.FirstOrDefault(u => u.Id == userId);
@@ -91,6 +90,21 @@ public class UserFileRepository : IUserRepository
         else
         {
             throw new InvalidOperationException($"User with id {userId} was not found");
+        }
+    }
+
+    public async Task<User> GetByUsernameAsync(string username) //calling user by username
+    {
+        var users = await LoadUsersAsync();
+        var user = users.FirstOrDefault(u => u.Username == username);
+
+        if (user != null)
+        {
+            return user;
+        }
+        else
+        {
+            throw new InvalidOperationException($"User with username {username} was not found");
         }
     }
 
@@ -112,7 +126,7 @@ public class UserFileRepository : IUserRepository
         }
     }
 
-    public async Task UpdateAsync(User user)
+    public async Task<User> UpdateAsync(User user)
     {
         var users = await LoadUsersAsync();
         var existingUser = users.SingleOrDefault(u => u.Id == user.Id);
@@ -128,5 +142,7 @@ public class UserFileRepository : IUserRepository
         {
             throw new InvalidOperationException("User not found.");
         }
+
+        return user;
     }
 }

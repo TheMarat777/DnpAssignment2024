@@ -26,9 +26,9 @@ namespace CLI.UI.ManagePosts;
                         string newTitle = Console.ReadLine();
                         newTitle = string.IsNullOrWhiteSpace(newTitle) ? post.Title : newTitle;
 
-                        Console.WriteLine($"Enter new body (current: {post.Body}): ");
+                        Console.WriteLine($"Enter new body (current: {post.Content}): ");
                         string newBody = Console.ReadLine();
-                        newBody = string.IsNullOrWhiteSpace(newBody) ? post.Body : newBody;
+                        newBody = string.IsNullOrWhiteSpace(newBody) ? post.Content : newBody;
 
                         Console.WriteLine($"Enter new User ID (current: {post.UserId}): ");
                         string userInput = Console.ReadLine();
@@ -37,7 +37,7 @@ namespace CLI.UI.ManagePosts;
                             var user = await userRepository.GetSingleAsync(newUserId);
 
                             post.Title = newTitle;
-                            post.Body = newBody;
+                            post.Content = newBody;
                             post.UserId = newUserId;
 
                             await postRepository.UpdateAsync(post);

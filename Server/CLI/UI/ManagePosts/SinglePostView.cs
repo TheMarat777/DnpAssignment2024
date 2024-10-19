@@ -28,7 +28,7 @@ namespace CLI.UI.ManagePosts;
                         Console.WriteLine($"\nPost Details:");
                         Console.WriteLine($"ID: {post.Id}");
                         Console.WriteLine($"Title: {post.Title}");
-                        Console.WriteLine($"Body: {post.Body}");
+                        Console.WriteLine($"Body: {post.Content}");
                         Console.WriteLine($"Author ID: {post.UserId}, Username: {username}");
                     }
                 }

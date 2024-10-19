@@ -12,7 +12,7 @@ namespace CLI.UI.ManagePosts;
 
         public async Task ShowAsync()
         {
-            var posts = await Task.Run(()=> postRepository.GetManyAsync().ToList());
+            var posts = await postRepository.GetManyAsync();
 
             if (posts.Any())
             {

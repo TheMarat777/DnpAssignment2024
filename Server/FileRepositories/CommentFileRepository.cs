@@ -50,8 +50,7 @@ public class CommentFileRepository : ICommentRepository
     {
         string commentsAsJson = await File.ReadAllTextAsync(filePath);
         List<Comment> comments = JsonSerializer.Deserialize<List<Comment>>(commentsAsJson) !;
-        int maxId = comments.Count > 0 ? comments.Max(x => x.Id) : 1;
-        comment.Id = maxId + 1;
+        comment.Id = comments.Count > 0 ? comments.Max(x => x.Id) +1 : 1;
         comments.Add(comment);
         commentsAsJson = JsonSerializer.Serialize(comments);
         await File.WriteAllTextAsync(filePath, commentsAsJson);
@@ -89,13 +88,13 @@ public class CommentFileRepository : ICommentRepository
         }
     }
 
-    public IQueryable<Comment> GetManyAsync()
+    public async Task<IEnumerable<Comment>> GetManyAsync()
     {
         try
         {
             string commentsAsJson = File.ReadAllTextAsync(filePath).Result;
             List<Comment> comments = JsonSerializer.Deserialize<List<Comment>>(commentsAsJson) !;
-            return comments.AsQueryable();
+            return comments.AsEnumerable();
         }
         catch (JsonException e)
         {
@@ -107,7 +106,7 @@ public class CommentFileRepository : ICommentRepository
         }
     }
 
-    public async Task UpdateAsync(Comment comment)
+    public async Task<Comment> UpdateAsync(Comment comment)
     {
         var comments = await LoadCommentsAsync();
         var existingComment = comments.SingleOrDefault(c => c.Id == comment.Id);
@@ -117,6 +116,7 @@ public class CommentFileRepository : ICommentRepository
             existingComment.Body = comment.Body;
             existingComment.UserId = comment.UserId;
             existingComment.PostId = comment.PostId;
+            return existingComment;
         }
         else
         {

@@ -50,7 +50,7 @@ public class CommentInMemoryRepository : ICommentRepository
         return Task.FromResult(comment); 
     }
 
-    public Task UpdateAsync(Comment comment)
+    public async Task<Comment> UpdateAsync(Comment comment)
     {
         Comment? existingComment = comments.SingleOrDefault(c => c.Id == comment.Id);
         if (existingComment is null)
@@ -61,7 +61,8 @@ public class CommentInMemoryRepository : ICommentRepository
         comments.Remove(existingComment);
         comments.Add(comment);
 
-        return Task.CompletedTask;
+        await Task.CompletedTask;
+        return comment;
     }
 
     public Task DeleteAsync(int id)
@@ -87,8 +88,8 @@ public class CommentInMemoryRepository : ICommentRepository
         return Task.FromResult(user);
     }
 
-    public IQueryable<Comment> GetManyAsync()
+    public Task<IEnumerable<Comment>> GetManyAsync()
     {
-        return comments.AsQueryable();
+        return Task.FromResult((IEnumerable<Comment>)comments.ToList());
     }
 }
