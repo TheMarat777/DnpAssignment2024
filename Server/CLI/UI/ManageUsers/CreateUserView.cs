@@ -17,9 +17,12 @@ namespace CLI.UI.ManageUsers;
 
             Console.Write("Enter password: ");
             string password = Console.ReadLine();
-
-            var user = new Entities.User(username, password);
-            var createdUser = await userRepository.AddAsync(user);
+            
+            Console.Write("Enter email: ");
+            string email = Console.ReadLine();
+            
+            var user = new Entities.User(username, password, email);
+            var createdUser = await userRepository.AddUserAsync(user);
         
             Console.WriteLine($"\nUser {createdUser.Username} created successfully with ID: {createdUser.Id}");
         }

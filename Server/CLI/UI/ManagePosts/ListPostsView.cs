@@ -14,7 +14,7 @@ namespace CLI.UI.ManagePosts;
 
         public async Task ShowAsync()
         {
-            var posts = await postRepository.GetManyAsync();
+            var posts = await postRepository.GetManyPostsAsync();
 
             if (posts.Any())
             {

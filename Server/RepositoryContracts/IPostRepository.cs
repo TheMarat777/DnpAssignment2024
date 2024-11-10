@@ -4,9 +4,9 @@ namespace RepositoryContracts;
 
 public interface IPostRepository
 {
-    Task<Post> AddAsync(Post post);
-    Task<Post> UpdateAsync(Post post);
-    Task DeleteAsync(int id);
-    Task <Post> GetSingleAsync(int id);
-    Task<IEnumerable<Post>> GetManyAsync();
+    Task<Post> AddPostAsync(Post post);
+    Task<Post> UpdatePostAsync(Post post);
+    Task DeletePostAsync(int id);
+    Task <Post> GetSinglePostAsync(int id);
+    Task<IEnumerable<Post>> GetManyPostsAsync();
 }

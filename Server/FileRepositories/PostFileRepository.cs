@@ -46,7 +46,7 @@ public class PostFileRepository : IPostRepository
         }
     }
 
-    public async Task<Post> AddAsync(Post post)
+    public async Task<Post> AddPostAsync(Post post)
     {
         string postsAsJson = await File.ReadAllTextAsync(filePath);
         List<Post> posts = JsonSerializer.Deserialize<List<Post>>(postsAsJson) !;
@@ -57,7 +57,7 @@ public class PostFileRepository : IPostRepository
         return post;
     }
 
-    public async Task DeleteAsync(int postId)
+    public async Task DeletePostAsync(int postId)
     {
         var posts = await LoadPostsAsync();
         var post = posts.SingleOrDefault(p => p.Id == postId);
@@ -73,7 +73,7 @@ public class PostFileRepository : IPostRepository
         }
     }
 
-    public async Task<Post> GetSingleAsync(int postId)
+    public async Task<Post> GetSinglePostAsync(int postId)
     {
         var posts = await LoadPostsAsync();
         var post = posts.FirstOrDefault(p => p.Id == postId);
@@ -88,7 +88,7 @@ public class PostFileRepository : IPostRepository
         }
     }
 
-    public async Task<IEnumerable<Post>> GetManyAsync()
+    public async Task<IEnumerable<Post>> GetManyPostsAsync()
     {
         try
         {
@@ -106,7 +106,7 @@ public class PostFileRepository : IPostRepository
         }
     }
 
-    public async Task<Post> UpdateAsync(Post post)
+    public async Task<Post> UpdatePostAsync(Post post)
     {
         var posts = await LoadPostsAsync();
         var existingPost = posts.SingleOrDefault(p => p.Id == post.Id);

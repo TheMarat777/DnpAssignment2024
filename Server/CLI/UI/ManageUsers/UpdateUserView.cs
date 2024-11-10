@@ -15,7 +15,7 @@ namespace CLI.UI.ManageUsers;
             Console.WriteLine("Enter the ID of the user you want to update: ");
             if (int.TryParse(Console.ReadLine(), out int id))
             {
-                var user = await userRepository.GetSingleAsync(id);
+                var user = await userRepository.GetSingleUserAsync(id);
                 if (user != null)
                 {
                     Console.Write($"Enter new username (current: {user.Username}) ");
@@ -27,7 +27,7 @@ namespace CLI.UI.ManageUsers;
                     user.Username = newUsername;
                     user.Password = newPassword;
                 
-                    await userRepository.UpdateAsync(user);
+                    await userRepository.UpdateUserAsync(user);
                     Console.WriteLine($"User with ID {id} was successfully updated.");
                 }
                 else

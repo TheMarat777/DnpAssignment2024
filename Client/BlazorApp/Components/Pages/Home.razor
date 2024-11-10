@@ -1,0 +1,105 @@
+﻿@page "/"
+@using BlazorApp.Auth
+@inject NavigationManager NavMgr
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<PageTitle>Home</PageTitle>
+
+<div class="home-container">
+    <h1 class="page-title">Reddit Clone</h1>
+
+    <AuthorizeView>
+        <Authorized>
+            <h3 class="welcome-message">Hello, @context.User.Identity!.Name</h3>
+            <!-- Only one button here for logout -->
+            <button class="logout-button" @onclick="Logout">Log Out</button>
+        </Authorized>
+        <NotAuthorized>
+            <p class="not-logged-in-message">Seems like you are not logged in :p</p>
+            <button class="primary-button" @onclick='() => NavMgr.NavigateTo("login")'>Go to Login</button>
+        </NotAuthorized>
+    </AuthorizeView>
+</div>
+
+<style>
+    html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        overflow: hidden;
+    }
+
+    .home-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        height: 100vh;
+        text-align: center;
+        background-color: #f8f9fa;
+        padding: 20px;
+        padding-top: 50px;
+        overflow: hidden;
+        position: relative; /* To position the logout button */
+    }
+
+    .page-title {
+        font-size: 3rem;
+        color: #007bff;
+        margin-bottom: 30px;
+    }
+
+    .welcome-message {
+        font-size: 1.5rem;
+        color: #28a745;
+    }
+
+    .not-logged-in-message {
+        font-size: 1.2rem;
+        color: #dc3545;
+        margin-bottom: 20px;
+    }
+
+    .primary-button {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1.1rem;
+        margin-top: 20px;
+    }
+
+    .primary-button:hover {
+        background-color: #0056b3;
+    }
+
+    .logout-button {
+        background-color: white;
+        color: red;
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        font-size: 1rem;
+        padding: 8px 16px;
+        border-radius: 4px;
+        border: 2px solid red;
+        cursor: pointer;
+    }
+
+    .logout-button:hover {
+        background-color: red;
+        color: white;
+    }
+</style>
+
+@code {
+private async Task Logout()
+{
+var authProvider = (SimpleAuthProvider)AuthenticationStateProvider;
+await authProvider.Logout();  // Log out the user
+NavMgr.NavigateTo("login");  // Redirect to the login page
+}
+}

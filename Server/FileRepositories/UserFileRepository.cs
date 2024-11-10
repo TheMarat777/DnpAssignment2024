@@ -25,7 +25,7 @@ public class UserFileRepository : IUserRepository
         try
         {
             string usersAsJson = await File.ReadAllTextAsync(filePath);
-            return JsonSerializer.Deserialize<List<User>>(usersAsJson) ?? new List<User>();
+            return string.IsNullOrEmpty(usersAsJson) ? new List<User>() : JsonSerializer.Deserialize<List<User>>(usersAsJson) ?? new List<User>();
         }
         catch (JsonException e)
         {
@@ -33,7 +33,7 @@ public class UserFileRepository : IUserRepository
         }
         catch (Exception e)
         {
-            throw new FileLoadException("An error occured while loading users.", e);
+            throw new FileLoadException("An error occurred while loading users.", e);
         }
 
     }
@@ -51,7 +51,7 @@ public class UserFileRepository : IUserRepository
         }
     }
 
-    public async Task<User> AddAsync(User user)
+    public async Task<User> AddUserAsync(User user)
     {
         string usersAsJson = await File.ReadAllTextAsync(filePath);
         List<User> users = JsonSerializer.Deserialize<List<User>>(usersAsJson) !;
@@ -62,7 +62,7 @@ public class UserFileRepository : IUserRepository
         return user;
     }
 
-    public async Task DeleteAsync(int userId)
+    public async Task DeleteUserAsync(int userId)
     {
         var users = await LoadUsersAsync();
         var user = users.SingleOrDefault(u => u.Id == userId);
@@ -78,7 +78,7 @@ public class UserFileRepository : IUserRepository
         }
     }
 
-    public async Task<User?> GetSingleAsync(int userId) //calling user by id
+    public async Task<User?> GetSingleUserAsync(int userId) //calling user by id
     {
         var users = await LoadUsersAsync();
         var user = users.FirstOrDefault(u => u.Id == userId);
@@ -93,22 +93,13 @@ public class UserFileRepository : IUserRepository
         }
     }
 
-    public async Task<User> GetByUsernameAsync(string username) //calling user by username
+    public async Task<User> GetUserByUsernameAsync(string username) //calling user by username
     {
         var users = await LoadUsersAsync();
-        var user = users.FirstOrDefault(u => u.Username == username);
-
-        if (user != null)
-        {
-            return user;
-        }
-        else
-        {
-            throw new InvalidOperationException($"User with username {username} was not found");
-        }
+        return users.FirstOrDefault(u => u.Username == username);
     }
 
-    public IQueryable<User> GetManyAsync()
+    public IQueryable<User> GetManyUsersAsync()
     {
         try
         {
@@ -126,7 +117,7 @@ public class UserFileRepository : IUserRepository
         }
     }
 
-    public async Task<User> UpdateAsync(User user)
+    public async Task<User> UpdateUserAsync(User user)
     {
         var users = await LoadUsersAsync();
         var existingUser = users.SingleOrDefault(u => u.Id == user.Id);

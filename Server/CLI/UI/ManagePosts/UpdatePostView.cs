@@ -19,7 +19,7 @@ namespace CLI.UI.ManagePosts;
             {
                 try
                 {
-                    var post = await postRepository.GetSingleAsync(id);
+                    var post = await postRepository.GetSinglePostAsync(id);
                     if (post != null)
                     {
                         Console.WriteLine($"Enter new title (current: {post.Title}): ");
@@ -34,13 +34,13 @@ namespace CLI.UI.ManagePosts;
                         string userInput = Console.ReadLine();
                         if (int.TryParse(userInput, out int newUserId))
                         {
-                            var user = await userRepository.GetSingleAsync(newUserId);
+                            var user = await userRepository.GetSingleUserAsync(newUserId);
 
                             post.Title = newTitle;
                             post.Content = newBody;
                             post.UserId = newUserId;
 
-                            await postRepository.UpdateAsync(post);
+                            await postRepository.UpdatePostAsync(post);
                             Console.WriteLine($"Post with id {post.Id} successfully updated.");
                         }
                     }

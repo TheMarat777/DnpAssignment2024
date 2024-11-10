@@ -1,0 +1,56 @@
+@page "/viewposts"
+@using APIContracts
+@using BlazorApp.Services
+@inject HttpClient HttpClient
+@inject NavigationManager NavMgr
+@inject IPostService PostService
+@inject IUserService UserService;
+
+<PageTitle>View Posts</PageTitle>
+
+
+@if (posts == null)
+{
+<p>Loading...</p>
+}
+else if (!posts.Any())
+{
+    <p>No posts available.</p>
+}
+else
+{
+    <ul class="post-list">
+        @foreach (var post in posts)
+        {
+            <li class="post-item">
+                <h4>@post.Title</h4>
+                <p>@post.Content</p>
+                <p><em>By @($"@{usernames[post.UserId]}")</em></p>
+            </li>
+        }
+    </ul>
+}
+
+@code {
+    private IEnumerable<PostDto> posts;
+    private Dictionary<int, string> usernames = new Dictionary<int, string>();
+    private string errorLabel;
+    private string successMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        posts = await PostService.GetPostsAsync();
+
+        foreach (var post in posts)
+        {
+            if (!usernames.ContainsKey(post.UserId))
+            {
+                var user = await UserService.GetUserAsync(post.UserId);
+                usernames[post.UserId] = user.UserName;
+                
+            }
+        }
+    }
+    
+
+}

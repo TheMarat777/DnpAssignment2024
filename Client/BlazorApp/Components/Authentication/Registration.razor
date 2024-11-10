@@ -1,0 +1,164 @@
+@page "/register"
+@using BlazorApp.Auth
+@inject AuthenticationStateProvider AuthProvider
+@inject NavigationManager NavMgr
+
+<PageTitle>Register</PageTitle>
+
+<div class="register-container">
+    <h1 class="page-title">Register</h1>
+
+    <AuthorizeView>
+        <NotAuthorized>
+            <h3>Create a new account</h3>
+
+            <div class="form-container">
+                <label class="label">Username:</label>
+                <input type="text" @bind="userName" class="input-field" />
+
+                <label class="label">Password:</label>
+                <input type="password" @bind="password" class="input-field" />
+
+                <label class="label">Email:</label>
+                <input type="email" @bind="email" class="input-field" />
+
+                @if (!string.IsNullOrEmpty(errorLabel))
+                {
+                    <label class="error-label">@errorLabel</label>
+                }
+
+                <button class="primary-button" @onclick="RegisterAsync">Register</button>
+            </div>
+
+            <div class="alternative-option">
+                <span>Already have an account?</span>
+                <button class="secondary-button" @onclick="NavigateToLogin">Log in</button>
+            </div>
+        </NotAuthorized>
+        <Authorized>
+            <h3>You are already registered, @context.User.Identity!.Name</h3>
+        </Authorized>
+    </AuthorizeView>
+</div>
+
+@code {
+    private string userName;
+    private string password;
+    private string email;
+    private string errorLabel;
+
+    private async Task RegisterAsync()
+    {
+        errorLabel = "";
+        try
+        {
+            await ((SimpleAuthProvider)AuthProvider).RegisterAsync(userName,password, email);
+            NavMgr.NavigateTo("/login");
+        }
+        catch (Exception e)
+        {
+            errorLabel = $"Error: {e.Message}";
+        }
+    }
+
+    private void NavigateToLogin()
+    {
+        NavMgr.NavigateTo("/login");
+    }
+}
+
+<style>
+    html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        overflow: hidden; 
+    }
+    
+    .register-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        height: 100vh;
+        text-align: center;
+        background-color: #f8f9fa;
+        padding: 20px;
+        padding-top: 50px;
+        overflow: hidden;
+    }
+
+    .page-title {
+        font-size: 3rem;
+        color: #007bff;
+        margin-bottom: 30px;
+    }
+
+    .label {
+        font-weight: bold;
+    }
+
+    .form-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 30px;
+    }
+
+    .input-field {
+        padding: 8px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        width: 100%;
+        max-width: 300px;
+    }
+
+    .primary-button {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1.1rem;
+        width: 100%;
+        max-width: 300px;
+        margin-top: 10px;
+    }
+
+    .primary-button:hover {
+        background-color: #0056b3;
+    }
+
+    .alternative-option {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 40px;
+    }
+
+    .alternative-option span {
+        margin-right: 10px;
+    }
+
+    .secondary-button {
+        background-color: transparent;
+        color: #007bff;
+        padding: 5px 10px;
+        border: 1px solid #007bff;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .secondary-button:hover {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .error-label {
+        color: red;
+        margin-bottom: 10px;
+    }
+</style>

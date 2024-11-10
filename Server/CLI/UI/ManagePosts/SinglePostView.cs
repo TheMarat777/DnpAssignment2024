@@ -19,10 +19,10 @@ namespace CLI.UI.ManagePosts;
             {
                 try
                 {
-                    var post = await postRepository.GetSingleAsync(id);
+                    var post = await postRepository.GetSinglePostAsync(id);
                     if (post != null)
                     {
-                        var user = await userRepository.GetSingleAsync(post.UserId);
+                        var user = await userRepository.GetSingleUserAsync(post.UserId);
                         string username = user?.Username ?? "Marat";
 
                         Console.WriteLine($"\nPost Details:");

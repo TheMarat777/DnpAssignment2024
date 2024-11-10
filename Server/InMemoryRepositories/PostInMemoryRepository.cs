@@ -9,24 +9,22 @@ public class PostInMemoryRepository : IPostRepository
 
     public PostInMemoryRepository()
     {
-        _ = AddAsync(new Post("Gym #1", "Today i had leg day, never again!.", 1)).Result;
-        _ = AddAsync(new Post("Gym #2", "I almost broke my spine doing squads with weights.", 1)).Result;
-        _ = AddAsync(new Post("DNP", "C# seems to be quite understandable.", 3)).Result;
-        _ = AddAsync(new Post("Recipe", "Tried out this new recipe today, and it was a hit! Nothing beats a home-cooked meal with fresh ingredients.", 2)).Result;
-        _ = AddAsync(new Post("A new friend", "In the morning a saw a bear hanging around my house.", 4)).Result;
-        _ = AddAsync(new Post("Any books?", "Can u guys share with some captivant books?", 3)).Result;
+       // _ = AddPostAsync(new Post(1, "Gym #1", "Today I had leg day, never again!", new User("marat", "1234", "marat@gmail.com"))).Result;
+       // _ = AddPostAsync(new Post(2, "Gym #2", "I almost broke my spine doing squats with weights.", new User("patrik", "4321", "patrik@gmail.com"))).Result;
+       //_ = AddPostAsync(new Post(3, "DNP", "C# seems to be quite understandable.", new User("tomas", "1243", "tomas@gmail.com"))).Result;
+       // _ = AddPostAsync(new Post(4, "Recipe", "Tried out this new recipe today, and it was a hit! Nothing beats a home-cooked meal with fresh ingredients.", new User("sebo", "2143", "sebo@gmail.com"))).Result;
+       // _ = AddPostAsync(new Post(5, "A new friend", "In the morning, I saw a bear hanging around my house.", new User("marat", "1234", "marat@gmail.com"))).Result;
+       // _ = AddPostAsync(new Post(6, "Any books?", "Can you guys share some captivating books?", new User("tomas", "1243", "tomas@gmail.com"))).Result;
     }
 
-    public Task<Post> AddAsync(Post post)
+    public Task<Post> AddPostAsync(Post post)
     {
-        post.Id = posts.Any()
-            ? posts.Max(p => p.Id) + 1
-            : 1;
+        post.Id = posts.Any() ? posts.Max(p => p.Id) + 1 : 1;
         posts.Add(post);
         return Task.FromResult(post);
     }
 
-    public async Task<Post> UpdateAsync(Post post)
+    public async Task<Post> UpdatePostAsync(Post post)
     {
         Post? existingPost = posts.SingleOrDefault(p => p.Id == post.Id);
         if (existingPost is null)
@@ -41,7 +39,7 @@ public class PostInMemoryRepository : IPostRepository
         return post;
     }
 
-    public Task DeleteAsync(int id)
+    public Task DeletePostAsync(int id)
     {
         var postToRemove = posts.SingleOrDefault(p => p.Id == id);
         if (postToRemove is null)
@@ -53,7 +51,7 @@ public class PostInMemoryRepository : IPostRepository
         return Task.CompletedTask;
     }
 
-    public Task<Post> GetSingleAsync(int id)
+    public Task<Post> GetSinglePostAsync(int id)
     {
         var post = posts.SingleOrDefault(p => p.Id == id);
         if (post is null)
@@ -64,7 +62,7 @@ public class PostInMemoryRepository : IPostRepository
         return Task.FromResult(post);
     }
 
-    public Task<IEnumerable<Post>> GetManyAsync()
+    public Task<IEnumerable<Post>> GetManyPostsAsync()
     {
         return Task.FromResult<IEnumerable<Post>>(posts.ToList());
     }

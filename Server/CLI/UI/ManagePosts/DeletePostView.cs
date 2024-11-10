@@ -17,7 +17,7 @@ namespace CLI.UI.ManagePosts;
             {
                 try
                 {
-                    await postRepository.DeleteAsync(id);
+                    await postRepository.DeletePostAsync(id);
                     Console.WriteLine($"Post with ID {id} deleted successfully.");
                 }
                 catch (InvalidOperationException ex)

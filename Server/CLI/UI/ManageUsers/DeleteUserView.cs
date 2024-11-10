@@ -17,7 +17,7 @@ namespace CLI.UI.ManageUsers;
             {
                 try
                 {
-                    await userRepository.DeleteAsync(id);
+                    await userRepository.DeleteUserAsync(id);
                     Console.WriteLine($"User with id {id} was successfully deleted.");
                 }
                 catch (InvalidOperationException e)

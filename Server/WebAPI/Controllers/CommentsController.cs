@@ -21,7 +21,7 @@ public class CommentsController : ControllerBase
 
     private async Task VerifyUserExistAsync(int userId)
     {
-        User user = await userRepository.GetSingleAsync(userId);
+        User user = await userRepository.GetSingleUserAsync(userId);
         if (user == null)
         {
             throw new Exception($"User with id {userId} not found");
@@ -75,7 +75,7 @@ public class CommentsController : ControllerBase
         {
             Id = updatedComment.Id,
             Body = updatedComment.Body,
-            Author = (await userRepository.GetSingleAsync(updatedComment.UserId)).Username
+            Author = (await userRepository.GetSingleUserAsync(updatedComment.UserId)).Username
         };
         
         return Ok(commentDto);
@@ -123,7 +123,7 @@ public class CommentsController : ControllerBase
         List<CommentDto> commentDtos = new List<CommentDto>();
         foreach (Comment comment in comments)
         {
-            string author  = (await userRepository.GetSingleAsync(comment.UserId)).Username;
+            string author  = (await userRepository.GetSingleUserAsync(comment.UserId)).Username;
 
             CommentDto commentDto = new CommentDto
             {

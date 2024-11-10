@@ -27,12 +27,13 @@ namespace CLI.UI.ManagePosts;
             {
                 try
                 {
-                    var user = await userRepository.GetSingleAsync(userId);
+                    var user = await userRepository.GetSingleUserAsync(userId);
 
-                    var post = new Post(title, body, userId);
-                    var createdPost = await postRepository.AddAsync(post);
+                   // var post = new Post(0, title, body, user);
+                    
+                   // var createdPost = await postRepository.AddPostAsync(post);
 
-                    Console.WriteLine($"Post: '{createdPost.Title}' created successfully with ID: {createdPost.Id}");
+                  //  Console.WriteLine($"Post: '{createdPost.Title}' created successfully with ID: {createdPost.Id}");
                 }
                 catch (InvalidCastException e)
                 {

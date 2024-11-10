@@ -1,17 +1,20 @@
-namespace Entities;
+using Entities;
+
 public class Post
 {
     public int Id { get; set; }
-    public String Title { get; set; }
-    public String Content { get; set; }
+    public string Title { get; set; }
+    public string Content { get; set; }
     public int UserId { get; set; }
     public int Likes { get; set; }
     
-    public Post(string title, string body, int userId)
+    public Post(){}
+
+    public Post(int id, string title, string content)
     {
+        Id = id;
         Title = title;
-        Content = body;
-        UserId = userId;
+        Content = content;
         Likes = 0;
     }
 }
