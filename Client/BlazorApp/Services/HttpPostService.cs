@@ -9,13 +9,12 @@ public class HttpPostService : IPostService
 
     public HttpPostService(HttpClient client)
     {
-        client.BaseAddress = new Uri("http://localhost:7207");
         this.client = client;
     }
 
     public async Task AddPostAsync (CreatePostDto request)
     {
-        HttpResponseMessage httpResponse = await client.PostAsJsonAsync("Posts", request);
+        HttpResponseMessage httpResponse = await client.PostAsJsonAsync($"https://localhost:7207/Posts", request);
 
         if (!httpResponse.IsSuccessStatusCode)
         {
@@ -53,7 +52,7 @@ public class HttpPostService : IPostService
 
     public async Task<IEnumerable<PostDto>> GetPostsAsync()
     {
-        HttpResponseMessage httpResponse = await client.GetAsync("Posts");
+        HttpResponseMessage httpResponse = await client.GetAsync("https://localhost:7207/Posts");
         string response = await httpResponse.Content.ReadAsStringAsync();
 
         if (!httpResponse.IsSuccessStatusCode)

@@ -9,6 +9,12 @@ public class Post
     public int Likes { get; set; }
     
     public Post(){}
+    
+    public Post(string title, string body)
+    {
+        Title = title;
+        Content = body;
+    }
 
     public Post(int id, string title, string content)
     {

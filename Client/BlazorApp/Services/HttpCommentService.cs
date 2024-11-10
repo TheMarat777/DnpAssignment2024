@@ -14,7 +14,7 @@ public class HttpCommentService : ICommentService
 
     public async Task<CommentDto> AddCommentAsync(CreateCommentDto request)
     {
-        HttpResponseMessage httpResponse = await client.PostAsJsonAsync("comments", request);
+        HttpResponseMessage httpResponse = await client.PostAsJsonAsync("Comments", request);
         string response = await httpResponse.Content.ReadAsStringAsync();
 
         if (!httpResponse.IsSuccessStatusCode)
@@ -31,7 +31,7 @@ public class HttpCommentService : ICommentService
 
     public async Task UpdateCommentAsync(int id, UpdateCommentDto request)
     {
-        HttpResponseMessage httpResponse = await client.PutAsJsonAsync($"comments/{id}", request);
+        HttpResponseMessage httpResponse = await client.PutAsJsonAsync($"Comments/{id}", request);
         string response = await httpResponse.Content.ReadAsStringAsync();
 
         if (!httpResponse.IsSuccessStatusCode)
@@ -42,7 +42,7 @@ public class HttpCommentService : ICommentService
 
     public async Task<CommentDto> GetCommentAsync(int id)
     {
-        HttpResponseMessage httpResponse = await client.GetAsync($"comments/{id}");
+        HttpResponseMessage httpResponse = await client.GetAsync($"Comments/{id}");
         string response = await httpResponse.Content.ReadAsStringAsync();
 
         if (!httpResponse.IsSuccessStatusCode)
@@ -58,7 +58,7 @@ public class HttpCommentService : ICommentService
 
     public async Task<IEnumerable<CommentDto>> GetCommentsAsync(int postId)
     {
-        HttpResponseMessage httpResponse = await client.GetAsync($"posts/{postId}/comments");
+        HttpResponseMessage httpResponse = await client.GetAsync($"Posts/{postId}/Comments");
         string response = await httpResponse.Content.ReadAsStringAsync();
 
         if (!httpResponse.IsSuccessStatusCode)
@@ -74,7 +74,7 @@ public class HttpCommentService : ICommentService
 
     public async Task DeleteCommentAsync(int id)
     {
-        HttpResponseMessage httpResponse = await client.DeleteAsync($"comments/{id}");
+        HttpResponseMessage httpResponse = await client.DeleteAsync($"Comments/{id}");
         string response = await httpResponse.Content.ReadAsStringAsync();
 
         if (!httpResponse.IsSuccessStatusCode)

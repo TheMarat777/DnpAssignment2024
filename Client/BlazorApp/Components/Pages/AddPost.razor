@@ -50,34 +50,34 @@
         var authState = await AuthProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 
-        errorLabel = "";
-        successMessage = "";
-        try
+        if (user.Identity.IsAuthenticated)
         {
-            if (user.Identity.IsAuthenticated)
+            var userIdClaim = user.FindFirst("Id");
+            if (userIdClaim != null && int.TryParse(userIdClaim.Value, out int userId))
             {
-                var userIdClaim = user.FindFirst("Id");
-                if (userIdClaim != null && int.TryParse(userIdClaim.Value, out int userId))
+                newPost.UserId = userId;
+
+                try
                 {
-                    newPost.UserId = userId; 
                     await PostService.AddPostAsync(newPost);
+                    successMessage = "Post added successfully!";
                 }
-                else
+                catch (Exception ex)
                 {
-                    errorLabel = "User ID is invalid.";
+                    errorLabel = $"Failed to add post: {ex.Message}";
                 }
             }
             else
             {
-                errorLabel = "You need to be logged in to create a post.";
+                errorLabel = "User ID not found in authentication claims.";
             }
         }
-        catch (Exception e)
+        else
         {
-            errorLabel = $"Error: {e.Message}";
-            successMessage = null;
+            errorLabel = "User is not authenticated.";
         }
     }
+
 
 }
 
