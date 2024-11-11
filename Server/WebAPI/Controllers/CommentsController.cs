@@ -82,7 +82,7 @@ public class CommentsController : ControllerBase
         CommentDto commentDto = new CommentDto()
         {
             Id = updatedComment.Id,
-            Content = updatedComment.Body,
+            Body = updatedComment.Body,
             UserId = updatedComment.UserId,
             PostId = updatedComment.PostId
         };
@@ -103,7 +103,7 @@ public class CommentsController : ControllerBase
         CommentDto commentDto = new CommentDto()
         {
             Id = comment.Id,
-            Content = comment.Body,
+            Body = comment.Body,
             UserId = comment.UserId,
             PostId = comment.PostId
         };
@@ -123,7 +123,7 @@ public class CommentsController : ControllerBase
             var commentsDtos = comments.Select(comment => new CommentDto
             {
                 Id = comment.Id,
-                Content = comment.Body,
+                Body = comment.Body,
                 UserId = comment.UserId,
                 PostId = comment.PostId
             }).ToList();

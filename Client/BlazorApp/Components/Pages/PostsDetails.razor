@@ -5,15 +5,19 @@
 @inject IPostService PostService
 @inject IUserService UserService
 
-@if (postWithComments == null)
+@if (isLoading)
 {
-<p>Loading...</p>
+    <p>Loading...</p>
+}
+else if (errorMessage != null)
+{
+    <p>Error: @errorMessage</p>
 }
 else
 {
     <h3>Title: @postWithComments.Post.Title</h3>
     <p>Content: @postWithComments.Post.Content</p>
-    <p><strong>Author:</strong> @username</p>
+    <p><strong>Author ID:</strong> @postWithComments.Post.UserId</p>
 
     <h4>Add a Comment</h4>
     <input type="text" @bind="newCommentBody" placeholder="Write a comment..."/>
@@ -23,8 +27,8 @@ else
     <ul>
         @foreach (var comment in postWithComments.Comments)
         {
-            <li>@comment.Content</li>
-            <p><em>By @commentUsernames[comment.UserId]</em></p>
+            <li>@comment.Body</li>
+            <p><em>By User ID: @comment.UserId</em></p>
         }
     </ul>
 }
@@ -36,60 +40,67 @@ else
 
     private PostWithCommentsDTO postWithComments;
     private string newCommentBody;
-    private string username;
     private int userId;
-    private Dictionary<int, string> commentUsernames = new Dictionary<int, string>();
+    private bool isLoading = true;
+    private string errorMessage;
 
     protected override async Task OnInitializedAsync()
     {
-        AuthenticationState authenticationState = await State;
-        ClaimsPrincipal claimsPrincipal = authenticationState.User;
-        if (claimsPrincipal.Identity is null || !claimsPrincipal.Identity.IsAuthenticated)
+        try
         {
-            return;
-        }
-        IEnumerable<Claim> claims = claimsPrincipal.Claims;
-        string userIdAsString = claims.Single(c => c.Type == "Id").Value;
-        userId = int.Parse(userIdAsString);
-        
-        postWithComments = await PostService.GetPostByIdAsync(postId);
-        var user = await UserService.GetUserAsync(postWithComments.Post.UserId);
-        username = user.UserName;
-        
-        foreach (var comment in postWithComments.Comments)
-        {
-            if (!commentUsernames.ContainsKey(comment.UserId))
+            AuthenticationState authenticationState = await State;
+            ClaimsPrincipal claimsPrincipal = authenticationState.User;
+            if (claimsPrincipal.Identity is null || !claimsPrincipal.Identity.IsAuthenticated)
             {
-                var commentUser = await UserService.GetUserAsync(comment.UserId);
-                commentUsernames[comment.UserId] = commentUser.UserName;
+                Console.WriteLine("User is not authenticated");
+                return;
             }
+            IEnumerable<Claim> claims = claimsPrincipal.Claims;
+            string userIdAsString = claims.Single(c => c.Type == "Id").Value;
+            userId = int.Parse(userIdAsString);
+
+            // Fetch the post
+            postWithComments = new PostWithCommentsDTO
+            {
+                Post = await PostService.GetPostAsync(postId)
+            };
+            Console.WriteLine($"Fetched post: {postWithComments.Post.Title}");
+
+            // Fetch the comments
+            postWithComments.Comments = await PostService.GetCommentsAsync(postId);
+            Console.WriteLine($"Fetched {postWithComments.Comments.Count} comments");
+
+            isLoading = false;
+            StateHasChanged(); // Ensure the UI is updated after data is loaded
         }
-        
-        StateHasChanged();
+        catch (Exception ex)
+        {
+            errorMessage = $"Error: {ex.Message}";
+            Console.WriteLine(errorMessage);
+        }
     }
 
     private async Task AddComment()
     {
-        var newComment = new CreateCommentDto()
+        try
         {
-            PostId = postId,
-            Body = newCommentBody,
-            UserId = userId
-        };
-
-        await PostService.AddCommentAsync(newComment);
-        postWithComments.Comments = await PostService.GetCommentsAsync(postId);
-        newCommentBody = string.Empty;
-        
-        foreach (var comment in postWithComments.Comments)
-        {
-            if (!commentUsernames.ContainsKey(comment.UserId))
+            var newComment = new CreateCommentDto()
             {
-                var commentUser = await UserService.GetUserAsync(comment.UserId);
-                commentUsernames[comment.UserId] = commentUser.UserName;
-            }
+                PostId = postId,
+                Body = newCommentBody,
+                UserId = userId
+            };
+
+            await PostService.AddCommentAsync(newComment);
+            postWithComments.Comments = await PostService.GetCommentsAsync(postId);
+            newCommentBody = string.Empty;
+
+            StateHasChanged();
         }
-        
-        StateHasChanged();
+        catch (Exception ex)
+        {
+            errorMessage = $"Error: {ex.Message}";
+            Console.WriteLine(errorMessage);
+        }
     }
 }

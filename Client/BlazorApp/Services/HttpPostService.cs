@@ -81,11 +81,13 @@ public class HttpPostService : IPostService
     {
         HttpResponseMessage response = await client.GetAsync($"https://localhost:7207/Posts/{id}");
         string content = await response.Content.ReadAsStringAsync();
-        
+
         if (!response.IsSuccessStatusCode)
         {
             throw new Exception(content);
         }
+
+        Console.WriteLine("API Response: " + content); // Log the raw response content
 
         return JsonSerializer.Deserialize<PostWithCommentsDTO>(content, new JsonSerializerOptions
         {
@@ -103,7 +105,15 @@ public class HttpPostService : IPostService
                 return new List<CommentDto>();
             }
             response.EnsureSuccessStatusCode();
-            return await response.Content.ReadFromJsonAsync<List<CommentDto>>();
+            var comments = await response.Content.ReadFromJsonAsync<List<CommentDto>>();
+
+            // Log the comments to verify the bodies
+            foreach (var comment in comments)
+            {
+                Console.WriteLine($"Comment ID: {comment.Id}, Body: {comment.Body}, UserId: {comment.UserId}, PostId: {comment.PostId}");
+            }
+
+            return comments;
         }
         catch (HttpRequestException ex)
         {
