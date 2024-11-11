@@ -7,36 +7,50 @@
 
 @if (isLoading)
 {
-    <p>Loading...</p>
+<p class="loading-text">Loading...</p>
 }
 else if (errorMessage != null)
 {
-    <p>Error: @errorMessage</p>
+<p class="error-message">Error: @errorMessage</p>
 }
 else
 {
-    <h3>Title: @postWithComments.Post.Title</h3>
-    <p>Content: @postWithComments.Post.Content</p>
-    <p><strong>Author ID:</strong> @postWithComments.Post.UserId</p>
+<div class="post-container">
+    <h2 class="post-title">@postWithComments.Post.Title</h2>
+    <p class="post-content">@postWithComments.Post.Content</p>
+    <p class="post-author"><strong>Author ID:</strong> @postWithComments.Post.UserId</p>
 
-    <h4>Add a Comment</h4>
-    <input type="text" @bind="newCommentBody" placeholder="Write a comment..."/>
-    <button @onclick="AddComment">Submit</button>
+    <div class="comments-section">
+        <h4>Add a Comment</h4>
+        <div class="add-comment-container">
+            <input type="text" class="comment-input" @bind="newCommentBody" placeholder="Write a comment..." />
+            <button class="submit-btn" @onclick="AddComment">Submit</button>
+        </div>
 
-    <h4>Comments</h4>
-    <ul>
-        @foreach (var comment in postWithComments.Comments)
-        {
-            <li>@comment.Body</li>
-            <p><em>By User ID: @comment.UserId</em></p>
-        }
-    </ul>
+        <h4>Comments</h4>
+        <ul class="comments-list">
+            @if (postWithComments.Comments.Any())
+            {
+            @foreach (var comment in postWithComments.Comments)
+            {
+            <li class="comment-item">
+                <p class="comment-body">@comment.Body</p>
+                <p class="comment-author">By User ID: @comment.UserId</p>
+            </li>
+            }
+            }
+            else
+            {
+            <p class="text-muted">No comments yet. Be the first to add one!</p>
+            }
+        </ul>
+    </div>
+</div>
 }
 
 @code {
     [Parameter] public int postId { get; set; }
-    [CascadingParameter]
-    public Task<AuthenticationState> State { get; set; }
+    [CascadingParameter] public Task<AuthenticationState> State { get; set; }
 
     private PostWithCommentsDTO postWithComments;
     private string newCommentBody;
@@ -55,23 +69,19 @@ else
                 Console.WriteLine("User is not authenticated");
                 return;
             }
+
             IEnumerable<Claim> claims = claimsPrincipal.Claims;
             string userIdAsString = claims.Single(c => c.Type == "Id").Value;
             userId = int.Parse(userIdAsString);
 
-            // Fetch the post
             postWithComments = new PostWithCommentsDTO
             {
                 Post = await PostService.GetPostAsync(postId)
             };
-            Console.WriteLine($"Fetched post: {postWithComments.Post.Title}");
 
-            // Fetch the comments
             postWithComments.Comments = await PostService.GetCommentsAsync(postId);
-            Console.WriteLine($"Fetched {postWithComments.Comments.Count} comments");
-
             isLoading = false;
-            StateHasChanged(); // Ensure the UI is updated after data is loaded
+            StateHasChanged();
         }
         catch (Exception ex)
         {
@@ -94,7 +104,6 @@ else
             await PostService.AddCommentAsync(newComment);
             postWithComments.Comments = await PostService.GetCommentsAsync(postId);
             newCommentBody = string.Empty;
-
             StateHasChanged();
         }
         catch (Exception ex)
@@ -103,4 +112,85 @@ else
             Console.WriteLine(errorMessage);
         }
     }
+
 }
+
+<style>
+    .post-container {
+        max-width: 700px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background: #f7f9fc;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .post-title {
+        color: #2c3e50;
+        font-size: 2rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+    }
+    .post-content, .post-author {
+        color: #34495e;
+        font-size: 1.1rem;
+        margin-bottom: 1.5rem;
+    }
+    .comments-section {
+        margin-top: 2rem;
+    }
+    .add-comment-container {
+        display: flex;
+        margin-bottom: 1.5rem;
+    }
+    .comment-input {
+        flex-grow: 1;
+        padding: 0.5rem;
+        border: 1px solid #ced4da;
+        border-radius: 5px;
+        font-size: 1rem;
+        margin-right: 0.5rem;
+    }
+    .submit-btn {
+        background-color: #3498db;
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+    .submit-btn:hover {
+        background-color: #2980b9;
+    }
+    .comments-list {
+        list-style: none;
+        padding: 0;
+    }
+    .comment-item {
+        background: #eaf2f8;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+    }
+    .comment-body {
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+    }
+    .comment-author {
+        color: #7f8c8d;
+        font-size: 0.9rem;
+    }
+    .loading-text {
+        text-align: center;
+        color: #3498db;
+        font-weight: bold;
+        font-size: 1.2rem;
+        margin-top: 2rem;
+    }
+    .error-message {
+        color: #e74c3c;
+        text-align: center;
+        font-weight: bold;
+        font-size: 1rem;
+    }
+</style>

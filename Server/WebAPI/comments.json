@@ -1,1 +1,6 @@
-[{"Id":1,"Body":"Thats nice!","UserId":0,"PostId":1},{"Id":2,"Body":"WOOOOOW","UserId":1,"PostId":1},{"Id":3,"Body":"hello","UserId":1,"PostId":1},{"Id":4,"Body":"ok","UserId":1,"PostId":1}]
+[
+  {"Id":1,"Body":"Totally agree! Blazor is awesome.","UserId":2,"PostId":1},
+  {"Id":2,"Body":"I'm excited to see where Blazor goes in the future!","UserId":1,"PostId":1},
+  {"Id":3,"Body":"ASP.NET Core is indeed very powerful.","UserId":3,"PostId":2},
+  {"Id":4,"Body":"EF Core saves so much time when working with data.","UserId":2,"PostId":3}
+]

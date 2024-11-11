@@ -1,1 +1,5 @@
-[{"Id":1,"Title":"Blazor","Content":"Nice way of building websites!","UserId":1,"Likes":0},{"Id":2,"Title":"sasati","Content":"sasati","UserId":1,"Likes":0}]
+[
+  {"Id": 1, "Title": "Blazor", "Content": "Nice way of building websites!", "UserId": 1, "Likes": 0},
+  {"Id": 2, "Title": "ASP.NET Core", "Content": "A powerful framework for building web applications.", "UserId": 2, "Likes": 0},
+  {"Id": 3, "Title": "EF Core", "Content": "EF Core makes working with databases easier.", "UserId": 3, "Likes": 0}
+]
