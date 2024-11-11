@@ -25,7 +25,7 @@ public class HttpPostService : IPostService
 
     public async Task UpdatePostAsync(int id, UpdatePostDto request)
     {
-        HttpResponseMessage httpResponse = await client.PutAsJsonAsync($"Posts/{id}", request);
+        HttpResponseMessage httpResponse = await client.PutAsJsonAsync($"https://localhost:7207/Posts/{id}", request);
         string response = await httpResponse.Content.ReadAsStringAsync();
 
         if (!httpResponse.IsSuccessStatusCode)
@@ -36,7 +36,7 @@ public class HttpPostService : IPostService
 
     public async Task<PostDto> GetPostAsync(int id)
     {
-        HttpResponseMessage httpResponse = await client.GetAsync($"Posts/{id}");
+        HttpResponseMessage httpResponse = await client.GetAsync($"https://localhost:7207/Posts/{id}");
         string response = await httpResponse.Content.ReadAsStringAsync();
 
         if (!httpResponse.IsSuccessStatusCode)
@@ -60,7 +60,6 @@ public class HttpPostService : IPostService
             throw new Exception(response);
         }
         
-        Console.WriteLine(response);
         return JsonSerializer.Deserialize<IEnumerable<PostDto>>(response, new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true
@@ -69,12 +68,60 @@ public class HttpPostService : IPostService
 
     public async Task DeletePostAsync(int id)
     {
-        HttpResponseMessage httpResponse = await client.DeleteAsync($"Posts/{id}");
+        HttpResponseMessage httpResponse = await client.DeleteAsync($"https://localhost:7207/Posts/{id}");
         string response = await httpResponse.Content.ReadAsStringAsync();
 
         if (!httpResponse.IsSuccessStatusCode)
         {
             throw new Exception(response);
+        }
+    }
+
+    public async Task<PostWithCommentsDTO> GetPostByIdAsync(int id)
+    {
+        HttpResponseMessage response = await client.GetAsync($"https://localhost:7207/Posts/{id}");
+        string content = await response.Content.ReadAsStringAsync();
+        
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new Exception(content);
+        }
+
+        return JsonSerializer.Deserialize<PostWithCommentsDTO>(content, new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        })!;
+    }
+
+    public async Task<List<CommentDto>> GetCommentsAsync(int postId)
+    {
+        try
+        {
+            HttpResponseMessage response = await client.GetAsync($"https://localhost:7207/Posts/{postId}/Comments");
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                return new List<CommentDto>();
+            }
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<List<CommentDto>>();
+        }
+        catch (HttpRequestException ex)
+        {
+            throw new Exception("Error fetching comments: " + ex.Message, ex);
+        }
+    }
+
+    public async Task<CreateCommentDto> AddCommentAsync(CreateCommentDto dto)
+    {
+        try
+        {
+            HttpResponseMessage response = await client.PostAsJsonAsync($"https://localhost:7207/Comments", dto);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<CreateCommentDto>();
+        }
+        catch (HttpRequestException ex)
+        {
+            throw new Exception("Error adding comment: " + ex.Message, ex);
         }
     }
 }

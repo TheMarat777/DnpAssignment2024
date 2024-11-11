@@ -145,24 +145,4 @@ public class SimpleAuthProvider: AuthenticationStateProvider
     
         NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(currentClaimsPrincipal)));
     }
-
-    public async Task AddPostAsync(string title, string content, int userId)
-    {
-        var createPostRequest = new CreatePostDto
-        {
-            Title = title,
-            Content = content,
-            UserId = userId
-        };
-
-        HttpResponseMessage response =
-            await httpClient.PostAsJsonAsync("https://localhost:7207/Auth/auth/addpost", createPostRequest);
-        string postContent = await response.Content.ReadAsStringAsync();
-
-        if (!response.IsSuccessStatusCode)
-        {
-            throw new Exception(postContent);
-        }
-    }
-
 }

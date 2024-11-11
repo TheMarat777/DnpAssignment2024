@@ -1,0 +1,95 @@
+@page "/postsdetails/{postId:int}"
+@using System.Security.Claims
+@using APIContracts
+@using BlazorApp.Services
+@inject IPostService PostService
+@inject IUserService UserService
+
+@if (postWithComments == null)
+{
+<p>Loading...</p>
+}
+else
+{
+    <h3>Title: @postWithComments.Post.Title</h3>
+    <p>Content: @postWithComments.Post.Content</p>
+    <p><strong>Author:</strong> @username</p>
+
+    <h4>Add a Comment</h4>
+    <input type="text" @bind="newCommentBody" placeholder="Write a comment..."/>
+    <button @onclick="AddComment">Submit</button>
+
+    <h4>Comments</h4>
+    <ul>
+        @foreach (var comment in postWithComments.Comments)
+        {
+            <li>@comment.Content</li>
+            <p><em>By @commentUsernames[comment.UserId]</em></p>
+        }
+    </ul>
+}
+
+@code {
+    [Parameter] public int postId { get; set; }
+    [CascadingParameter]
+    public Task<AuthenticationState> State { get; set; }
+
+    private PostWithCommentsDTO postWithComments;
+    private string newCommentBody;
+    private string username;
+    private int userId;
+    private Dictionary<int, string> commentUsernames = new Dictionary<int, string>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        AuthenticationState authenticationState = await State;
+        ClaimsPrincipal claimsPrincipal = authenticationState.User;
+        if (claimsPrincipal.Identity is null || !claimsPrincipal.Identity.IsAuthenticated)
+        {
+            return;
+        }
+        IEnumerable<Claim> claims = claimsPrincipal.Claims;
+        string userIdAsString = claims.Single(c => c.Type == "Id").Value;
+        userId = int.Parse(userIdAsString);
+        
+        postWithComments = await PostService.GetPostByIdAsync(postId);
+        var user = await UserService.GetUserAsync(postWithComments.Post.UserId);
+        username = user.UserName;
+        
+        foreach (var comment in postWithComments.Comments)
+        {
+            if (!commentUsernames.ContainsKey(comment.UserId))
+            {
+                var commentUser = await UserService.GetUserAsync(comment.UserId);
+                commentUsernames[comment.UserId] = commentUser.UserName;
+            }
+        }
+        
+        StateHasChanged();
+    }
+
+    private async Task AddComment()
+    {
+        var newComment = new CreateCommentDto()
+        {
+            PostId = postId,
+            Body = newCommentBody,
+            UserId = userId
+        };
+
+        await PostService.AddCommentAsync(newComment);
+        postWithComments.Comments = await PostService.GetCommentsAsync(postId);
+        newCommentBody = string.Empty;
+        
+        foreach (var comment in postWithComments.Comments)
+        {
+            if (!commentUsernames.ContainsKey(comment.UserId))
+            {
+                var commentUser = await UserService.GetUserAsync(comment.UserId);
+                commentUsernames[comment.UserId] = commentUser.UserName;
+            }
+        }
+        
+        StateHasChanged();
+    }
+}

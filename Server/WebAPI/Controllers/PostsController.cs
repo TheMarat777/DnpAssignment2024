@@ -12,11 +12,13 @@ public class PostsController : ControllerBase
 {
     private readonly IPostRepository postRepository;
     private readonly IUserRepository userRepository;
+    private readonly ICommentRepository commentRepository;
     
-    public PostsController(IPostRepository postRepository, IUserRepository userRepository)
+    public PostsController(IPostRepository postRepository, IUserRepository userRepository, ICommentRepository commentRepository)
     {
         this.postRepository = postRepository;
         this.userRepository = userRepository;
+        this.commentRepository = commentRepository;
     }
     
     private async Task VerifyUserExistAsync(int userId)
@@ -147,5 +149,21 @@ public class PostsController : ControllerBase
 
         await postRepository.DeletePostAsync(id);
         return NoContent();
+    }
+    
+    // GET https://localhost:7207/Posts/{id}/Comments
+    [HttpGet("{postId:int}/Comments")]
+    public async Task<IResult> GetCommentsByPostIdAsync([FromRoute] int postId)
+    {
+        try
+        {
+            List<Comment> comments = await commentRepository.GetCommentsByPostIdAsync(postId);
+            return Results.Ok(comments);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return Results.NotFound(e.Message);
+        }
     }
 }

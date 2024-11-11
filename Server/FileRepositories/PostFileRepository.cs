@@ -94,7 +94,7 @@ public class PostFileRepository : IPostRepository
         {
             string postsAsJson = File.ReadAllTextAsync(filePath).Result;
             List<Post> posts = JsonSerializer.Deserialize<List<Post>>(postsAsJson) !;
-            return posts.AsQueryable();
+            return posts.AsEnumerable();
         }
         catch(JsonException e)
         {

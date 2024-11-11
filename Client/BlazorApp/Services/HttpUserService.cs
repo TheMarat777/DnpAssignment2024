@@ -14,7 +14,7 @@ public class HttpUserService : IUserService
 
     public async Task<UserDto> AddUserAsync(CreateUserDto request)
     {
-        HttpResponseMessage httpResponse = await client.PostAsJsonAsync("Users", request);
+        HttpResponseMessage httpResponse = await client.PostAsJsonAsync("https://localhost:7207/Users", request);
         string response = await httpResponse.Content.ReadAsStringAsync();
         if (!httpResponse.IsSuccessStatusCode)
         {
@@ -29,7 +29,7 @@ public class HttpUserService : IUserService
 
     public async Task UpdateUserAsync(int id, UpdateUserDto request)
     {
-        HttpResponseMessage httpResponse = await client.PutAsJsonAsync($"Users/{id}", request);
+        HttpResponseMessage httpResponse = await client.PutAsJsonAsync($"https://localhost:7207/Users/{id}", request);
         string response = await httpResponse.Content.ReadAsStringAsync();
 
         if (!httpResponse.IsSuccessStatusCode)
@@ -40,7 +40,7 @@ public class HttpUserService : IUserService
 
     public async Task<UserDto> GetUserAsync(int id)
     {
-       var response = await client.GetFromJsonAsync<UserDto>($"Users/{id}");
+       var response = await client.GetFromJsonAsync<UserDto>($"https://localhost:7207/Users/{id}");
        return response ?? new UserDto
        {
            UserName = "Unknown"
@@ -49,7 +49,7 @@ public class HttpUserService : IUserService
 
     public async Task<IEnumerable<UserDto>> GetUsersAsync() 
     { 
-        HttpResponseMessage httpResponse = await client.GetAsync("Users"); 
+        HttpResponseMessage httpResponse = await client.GetAsync("https://localhost:7207/Users"); 
         string response = await httpResponse.Content.ReadAsStringAsync(); 
 
         if (!httpResponse.IsSuccessStatusCode) 
@@ -65,7 +65,7 @@ public class HttpUserService : IUserService
 
     public async Task DeleteUserAsync(int id)
     {
-        HttpResponseMessage httpResponse = await client.DeleteAsync($"Users/{id}");
+        HttpResponseMessage httpResponse = await client.DeleteAsync($"https://localhost:7207/Users/{id}");
         string response = await httpResponse.Content.ReadAsStringAsync();
 
         if (!httpResponse.IsSuccessStatusCode)

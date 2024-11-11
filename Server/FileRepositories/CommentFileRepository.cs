@@ -2,8 +2,6 @@ using System.Text.Json;
 using Entities;
 using RepositoryContracts;
 
-namespace FileRepositories;
-
 public class CommentFileRepository : ICommentRepository
 {
     private readonly string filePath = "comments.json";
@@ -105,6 +103,13 @@ public class CommentFileRepository : ICommentRepository
             throw new InvalidDataException("An error occured while loading comments.", e);
         }
     }
+    
+    public async Task<List<Comment>> GetCommentsByPostIdAsync(int postId)
+    {
+        List<Comment> comments = await LoadCommentsAsync();
+        var filteredComments = comments.Where(c => c.PostId == postId).ToList();
+        return filteredComments;
+    }
 
     public async Task<Comment> UpdateAsync(Comment comment)
     {
@@ -123,4 +128,4 @@ public class CommentFileRepository : ICommentRepository
             throw new InvalidDataException($"Comment with id {comment.Id} could not be found.");
         }
     }
-}  
+}

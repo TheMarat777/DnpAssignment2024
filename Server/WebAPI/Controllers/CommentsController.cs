@@ -12,11 +12,13 @@ public class CommentsController : ControllerBase
 {
     private readonly ICommentRepository commentRepository;
     private readonly IUserRepository userRepository;
+    private readonly IPostRepository postRepository;
 
-    public CommentsController(ICommentRepository commentRepository, IUserRepository userRepository)
+    public CommentsController(ICommentRepository commentRepository, IUserRepository userRepository, IPostRepository postRepository)
     {
         this.commentRepository = commentRepository;
         this.userRepository = userRepository;
+        this.postRepository = postRepository;
     }
 
     private async Task VerifyUserExistAsync(int userId)
@@ -27,33 +29,39 @@ public class CommentsController : ControllerBase
             throw new Exception($"User with id {userId} not found");
         }
     }
-    
+
     // POST https://localhost:7207/Comments
     [HttpPost]
-    public async Task<ActionResult<CommentDto>> CreateComment([FromBody] CreateCommentDto request)
+    public async Task<IResult> CreateComment([FromBody] CreateCommentDto request)
     {
-        try
-        {
+        
             await VerifyUserExistAsync(request.UserId);
-            Comment comment = new Comment(request.Body, request.PostId, request.UserId);
-            Comment createdComment = await commentRepository.AddAsync(comment);
-
-            CommentDto commentDto = new CommentDto
+            var post = await postRepository.GetSinglePostAsync(request.PostId);
+            var user = await userRepository.GetSingleUserAsync(request.UserId);
+            
+            
+            if (post == null)
             {
-                Id = createdComment.Id,
-                Body = createdComment.Body,
-                UserId = createdComment.UserId,
-                PostId = createdComment.PostId
+                Console.WriteLine($"Post with ID {request.PostId} not found.");
+            }
+
+            if (user == null)
+            {
+                Console.WriteLine($"User with ID {request.UserId} not found.");
+            }
+            
+            var comment = new Comment()
+            {
+                Body = request.Body,
+                PostId = request.PostId,
+                UserId = request.UserId
             };
-            return Created($"comments/{createdComment.Id}", commentDto);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            return StatusCode(500);
-        }
+            
+            await commentRepository.AddAsync(comment);
+            return Results.Created($"comments/{comment.Id}", comment);
+            
     }
-    
+
     // PUT https://localhost:7207/Comments/{id}
     [HttpPut("{id}")]
     public async Task<ActionResult<CommentDto>> UpdateComment(int id, [FromBody] CreateCommentDto request)
@@ -63,21 +71,22 @@ public class CommentsController : ControllerBase
         {
             await VerifyUserExistAsync(request.UserId);
         }
-        
+
         await VerifyUserExistAsync(existingComment.UserId);
         existingComment.Body = request.Body;
         existingComment.UserId = request.UserId;
         existingComment.PostId = request.PostId;
-        
+
         Comment updatedComment = await commentRepository.UpdateAsync(existingComment);
 
         CommentDto commentDto = new CommentDto()
         {
             Id = updatedComment.Id,
-            Body = updatedComment.Body,
-            Author = (await userRepository.GetSingleUserAsync(updatedComment.UserId)).Username
+            Content = updatedComment.Body,
+            UserId = updatedComment.UserId,
+            PostId = updatedComment.PostId
         };
-        
+
         return Ok(commentDto);
     }
 
@@ -94,7 +103,7 @@ public class CommentsController : ControllerBase
         CommentDto commentDto = new CommentDto()
         {
             Id = comment.Id,
-            Body = comment.Body,
+            Content = comment.Body,
             UserId = comment.UserId,
             PostId = comment.PostId
         };
@@ -107,36 +116,29 @@ public class CommentsController : ControllerBase
         [FromQuery] int? userId,
         [FromQuery] int? postId)
     {
-        IEnumerable<Comment> comments = await commentRepository.GetManyAsync();
-        
-        //filter by user id
-        if (userId.HasValue)
+        try
         {
-            comments = comments.Where(c => c.UserId == userId);
-        }
+            var comments = await commentRepository.GetManyAsync();
 
-        if (postId.HasValue)
-        {
-            comments = comments.Where(c => c.PostId == postId);
-        }
-        
-        List<CommentDto> commentDtos = new List<CommentDto>();
-        foreach (Comment comment in comments)
-        {
-            string author  = (await userRepository.GetSingleUserAsync(comment.UserId)).Username;
-
-            CommentDto commentDto = new CommentDto
+            var commentsDtos = comments.Select(comment => new CommentDto
             {
                 Id = comment.Id,
-                Body = comment.Body,
-                Author = author
-            };
-            commentDtos.Add(commentDto);
+                Content = comment.Body,
+                UserId = comment.UserId,
+                PostId = comment.PostId
+            }).ToList();
+
+            return Ok(commentsDtos);
         }
-        return Ok(commentDtos);
+        catch (Exception e)
+        {
+            return StatusCode(500, "An error occured while getting comments.");
+        }
+        
     }
 
-    // DELETE https://localhost:7207/Comments/{id}
+
+// DELETE https://localhost:7207/Comments/{id}
     [HttpDelete("{id}")]
     public async Task<ActionResult<CommentDto>> DeleteComment(int id)
     {
@@ -150,4 +152,3 @@ public class CommentsController : ControllerBase
         return NoContent();
     }
 }
-

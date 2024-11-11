@@ -92,4 +92,9 @@ public class CommentInMemoryRepository : ICommentRepository
     {
         return Task.FromResult((IEnumerable<Comment>)comments.ToList());
     }
+
+    public Task<List<Comment>> GetCommentsByPostIdAsync(int postId)
+    {
+        throw new NotImplementedException();
+    }
 }

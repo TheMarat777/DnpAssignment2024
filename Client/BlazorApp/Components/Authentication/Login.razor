@@ -13,15 +13,15 @@
             <h3>Please log in to your account</h3>
 
             <div class="form-container">
-                <label class="label">Username:</label>
-                <input type="text" @bind="userName" class="input-field" />
+                <label for="username" class="form-label">Username</label>
+                <input id="username" type="text" @bind="userName" class="input-field" placeholder="Enter your username" />
 
-                <label class="label">Password:</label>
-                <input type="password" @bind="password" class="input-field" />
+                <label for="password" class="form-label">Password</label>
+                <input id="password" type="password" @bind="password" class="input-field" placeholder="Enter your password" />
 
                 @if (!string.IsNullOrEmpty(errorLabel))
                 {
-                    <label class="error-label">@errorLabel</label>
+                    <div class="alert alert-danger">@errorLabel</div>
                 }
 
                 <button class="primary-button" @onclick="LoginAsync">Log in</button>
@@ -64,88 +64,95 @@
 }
 
 <style>
-    html, body {
-        height: 100%;
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        overflow: hidden;
-    }
-    
+    /* Page layout and structure */
     .login-container {
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: flex-start;
         height: 100vh;
-        text-align: center;
+        padding: 50px 20px;
         background-color: #f8f9fa;
-        padding: 20px;
-        padding-top: 50px;
         overflow: hidden;
     }
 
     .page-title {
-        font-size: 3rem;
+        font-size: 2.5rem;
         color: #007bff;
-        margin-bottom: 30px;
+        margin-bottom: 20px;
+        font-weight: 600;
     }
 
-    .label {
-        font-weight: bold;
-    }
-
+    /* Form container and input styling */
     .form-container {
         display: flex;
         flex-direction: column;
         align-items: center;
-        margin-top: 30px;
+        margin-top: 20px;
+        width: 100%;
+        max-width: 400px;
+        padding: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        background-color: white;
+    }
+
+    .form-label {
+        font-weight: 600;
+        margin-bottom: 5px;
+        text-align: left;
+        width: 100%;
+        color: #007bff;
     }
 
     .input-field {
-        padding: 8px;
-        margin-bottom: 10px;
+        padding: 10px;
+        margin-bottom: 15px;
         border: 1px solid #ccc;
-        border-radius: 4px;
+        border-radius: 5px;
         width: 100%;
-        max-width: 300px;
+        font-size: 1rem;
     }
 
+    /* Button styling */
     .primary-button {
         background-color: #007bff;
         color: white;
-        padding: 10px 20px;
+        padding: 12px 24px;
         border: none;
-        border-radius: 4px;
+        border-radius: 5px;
         cursor: pointer;
         font-size: 1.1rem;
         width: 100%;
         max-width: 300px;
         margin-top: 10px;
+        transition: background-color 0.3s;
     }
 
     .primary-button:hover {
         background-color: #0056b3;
     }
 
+    /* Alternative option */
     .alternative-option {
         display: flex;
-        justify-content: center;
         align-items: center;
-        margin-top: 40px;
+        margin-top: 30px;
     }
 
     .alternative-option span {
         margin-right: 10px;
+        color: #555;
     }
 
     .secondary-button {
         background-color: transparent;
         color: #007bff;
-        padding: 5px 10px;
+        padding: 8px 16px;
         border: 1px solid #007bff;
-        border-radius: 4px;
+        border-radius: 5px;
         cursor: pointer;
+        font-size: 1rem;
     }
 
     .secondary-button:hover {
@@ -153,8 +160,18 @@
         color: white;
     }
 
-    .error-label {
-        color: red;
-        margin-bottom: 10px;
+    /* Alert message */
+    .alert {
+        font-size: 0.9rem;
+        padding: 10px;
+        border-radius: 5px;
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .alert-danger {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #dc3545;
     }
 </style>

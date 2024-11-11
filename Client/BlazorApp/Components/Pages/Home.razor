@@ -11,7 +11,6 @@
     <AuthorizeView>
         <Authorized>
             <h3 class="welcome-message">Hello, @context.User.Identity!.Name</h3>
-            <!-- Only one button here for logout -->
             <button class="logout-button" @onclick="Logout">Log Out</button>
         </Authorized>
         <NotAuthorized>
@@ -96,10 +95,12 @@
 </style>
 
 @code {
-private async Task Logout()
-{
-var authProvider = (SimpleAuthProvider)AuthenticationStateProvider;
-await authProvider.Logout();  // Log out the user
-NavMgr.NavigateTo("login");  // Redirect to the login page
-}
+
+    private async Task Logout()
+    {
+        var authProvider = (SimpleAuthProvider)AuthenticationStateProvider;
+        await authProvider.Logout();
+        NavMgr.NavigateTo("login");
+    }
+
 }

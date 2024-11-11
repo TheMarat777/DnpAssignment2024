@@ -8,6 +8,5 @@ public class PostDto
     public string Title { get; set; }
     public string Content { get; set; }
     public int UserId { get; set; }
-    public List<CommentDto> Comments { get; set; } = new List<CommentDto>();
     public int Likes { get; set; }
 }

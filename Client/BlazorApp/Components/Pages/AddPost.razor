@@ -11,22 +11,23 @@
 <PageTitle>Add Post</PageTitle>
 
 <div class="post-container">
+    <button class="logout-button" @onclick="Logout">Log Out</button>
     <h1 class="page-title">Create a New Post</h1>
 
     <AuthorizeView>
         <Authorized>
             <div class="form-container">
                 <label for="title" class="form-label">Title</label>
-                <InputText id="title" class="form-control" @bind-Value="newPost.Title" />
+                <InputText id="title" class="form-control input-field" @bind-Value="newPost.Title" placeholder="Enter post title" />
 
                 <label for="body" class="form-label">Body</label>
-                <InputTextArea id="body" class="form-control" @bind-Value="newPost.Content" />
+                <InputTextArea id="body" class="form-control input-field" @bind-Value="newPost.Content" placeholder="Write your post content here..." />
 
-                @if (errorLabel != null)
+                @if (!string.IsNullOrEmpty(errorLabel))
                 {
                 <div class="alert alert-danger mt-3">@errorLabel</div>
                 }
-                @if (successMessage != null)
+                @if (!string.IsNullOrEmpty(successMessage))
                 {
                 <div class="alert alert-success mt-3">@successMessage</div>
                 }
@@ -35,7 +36,7 @@
             </div>
         </Authorized>
         <NotAuthorized>
-            <p>You must be logged in to create a post.</p>
+            <p class="auth-warning">You must be logged in to create a post.</p>
         </NotAuthorized>
     </AuthorizeView>
 </div>
@@ -61,10 +62,12 @@
                 {
                     await PostService.AddPostAsync(newPost);
                     successMessage = "Post added successfully!";
+                    errorLabel = null;
                 }
                 catch (Exception ex)
                 {
                     errorLabel = $"Failed to add post: {ex.Message}";
+                    successMessage = null;
                 }
             }
             else
@@ -78,6 +81,12 @@
         }
     }
 
+    private async Task Logout()
+    {
+        var authProvider = (SimpleAuthProvider)AuthProvider;
+        await authProvider.Logout();
+        NavMgr.NavigateTo("login");
+    }
 
 }
 
@@ -86,7 +95,9 @@
         height: 100%;
         margin: 0;
         padding: 0;
-        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+        color: #333;
+        background-color: #f8f9fa;
         overflow: hidden;
     }
 
@@ -94,52 +105,60 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: flex-start;
-        height: 100vh;
-        text-align: center;
+        justify-content: center;
+        padding: 40px;
         background-color: #f8f9fa;
-        padding: 20px;
-        padding-top: 50px;
-        overflow: hidden;
+        position: relative;
     }
 
     .page-title {
-        font-size: 3rem;
+        font-size: 2.5rem;
         color: #007bff;
-        margin-bottom: 30px;
-    }
-
-    .label {
-        font-weight: bold;
+        margin-bottom: 20px;
+        font-weight: 600;
     }
 
     .form-container {
         display: flex;
         flex-direction: column;
         align-items: center;
-        margin-top: 30px;
+        width: 100%;
+        max-width: 400px;
+        padding: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        background-color: white;
+        animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .form-label {
+        font-weight: 600;
+        margin-bottom: 5px;
+        text-align: left;
+        width: 100%;
+        color: #007bff;
     }
 
     .input-field {
-        padding: 8px;
-        margin-bottom: 10px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
         width: 100%;
-        max-width: 300px;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 1rem;
     }
 
     .primary-button {
         background-color: #007bff;
         color: white;
-        padding: 10px 20px;
+        padding: 12px 24px;
         border: none;
-        border-radius: 4px;
+        border-radius: 5px;
         cursor: pointer;
         font-size: 1.1rem;
         width: 100%;
         max-width: 300px;
-        margin-top: 10px;
+        transition: background-color 0.3s;
     }
 
     .primary-button:hover {
@@ -149,16 +168,44 @@
     .alert {
         font-size: 0.9rem;
         padding: 10px;
-        border-radius: 4px;
+        border-radius: 5px;
+        width: 100%;
+        margin-top: 10px;
     }
 
     .alert-danger {
         background-color: #f8d7da;
         color: #721c24;
+        border: 1px solid #dc3545;
     }
 
     .alert-success {
         background-color: #d4edda;
         color: #155724;
+        border: 1px solid #28a745;
+    }
+    
+    .auth-warning {
+        color: #dc3545;
+        font-size: 1.1rem;
+        margin-top: 20px;
+    }
+
+    .logout-button {
+        background-color: white;
+        color: red;
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        font-size: 1rem;
+        padding: 8px 16px;
+        border-radius: 4px;
+        border: 2px solid red;
+        cursor: pointer;
+    }
+
+    .logout-button:hover {
+        background-color: red;
+        color: white;
     }
 </style>

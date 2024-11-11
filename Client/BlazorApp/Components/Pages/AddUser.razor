@@ -8,63 +8,69 @@
 <PageTitle>AddUser</PageTitle>
 
 <div class="register-container">
+    <button class="logout-button" @onclick="Logout">Log Out</button>
     <h1 class="page-title">Add a new User</h1>
 
     <AuthorizeView>
         <Authorized>
             <div class="form-container">
-                <label class="label">Username:</label>
-                <input type="text" @bind="userName" class="input-field" />
+                <label for="username" class="form-label">Username:</label>
+                <input type="text" id="username" @bind="userName" class="input-field" placeholder="Enter your username" />
 
-                <label class="label">Password:</label>
-                <input type="password" @bind="password" class="input-field" />
+                <label for="password" class="form-label">Password:</label>
+                <input type="password" id="password" @bind="password" class="input-field" placeholder="Enter your password" />
 
-                <label class="label">Email:</label>
-                <input type="email" @bind="email" class="input-field" />
-            
-                @if (errorLabel != null)
-                { 
-                    <div class="alert alert-danger mt-3">@errorLabel</div>
-                }
-                @if (successMessage != null)
+                <label for="email" class="form-label">Email:</label>
+                <input type="email" id="email" @bind="email" class="input-field" placeholder="Enter your email" />
+
+                @if (!string.IsNullOrEmpty(errorLabel))
                 {
-                    <div class="alert alert-success mt-3">@successMessage</div>
+                <div class="alert alert-danger mt-3">@errorLabel</div>
                 }
-                    <button class="primary-button" @onclick="AddUserAsync">Add</button>
-             </div>
-
+                @if (!string.IsNullOrEmpty(successMessage))
+                {
+                <div class="alert alert-success mt-3">@successMessage</div>
+                }
+                <button type="button" class="primary-button" @onclick="AddUserAsync">Add</button>
+            </div>
         </Authorized>
-
     </AuthorizeView>
 </div>
 
 @code {
-    private string userName;
-    private string password;
-    private string email;
-    private string errorLabel;
-    private string successMessage;
+private string userName;
+private string password;
+private string email;
+private string errorLabel;
+private string successMessage;
 
-    private async Task AddUserAsync()
+private async Task AddUserAsync()
+{
+    errorLabel = "";
+    successMessage = "";
+    try
     {
-        errorLabel = "";
-        successMessage = "";
-        try
-        {
-            await ((SimpleAuthProvider)AuthProvider).AddUserAsync(userName, password, email);
-            successMessage = "User created successfully!";
-            errorLabel = null;
-        }
-        catch (Exception e)
-        {
-            errorLabel = $"Error: {e.Message}";
-            successMessage = null;
-        }
+        await ((SimpleAuthProvider)AuthProvider).AddUserAsync(userName, password, email);
+        successMessage = "User created successfully!";
+        errorLabel = null;
     }
-    
+    catch (Exception e)
+    {
+        errorLabel = $"Error: {e.Message}";
+        successMessage = null;
+    }
+}
+
+private async Task Logout()
+{
+    var authProvider = (SimpleAuthProvider)AuthProvider;
+    await authProvider.Logout();
+    NavMgr.NavigateTo("login");
+}
 }
 
 <style>
+    /* Base styling */
     html, body {
         height: 100%;
         margin: 0;
@@ -81,81 +87,101 @@
         height: 100vh;
         text-align: center;
         background-color: #f8f9fa;
-        padding: 20px;
-        padding-top: 50px;
+        padding: 40px 20px;
         overflow: hidden;
+        position: relative; /* To position the logout button */
     }
 
     .page-title {
-        font-size: 3rem;
+        font-size: 2.5rem;
         color: #007bff;
         margin-bottom: 30px;
-    }
-
-    .label {
-        font-weight: bold;
+        font-weight: 600;
     }
 
     .form-container {
         display: flex;
         flex-direction: column;
         align-items: center;
-        margin-top: 30px;
+        width: 100%;
+        max-width: 400px;
+        padding: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        background-color: white;
+        animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .form-label {
+        font-weight: 600;
+        margin-bottom: 5px;
+        text-align: left;
+        width: 100%;
+        color: #007bff;
     }
 
     .input-field {
-        padding: 8px;
-        margin-bottom: 10px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
         width: 100%;
-        max-width: 300px;
+        padding: 12px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 1rem;
     }
 
     .primary-button {
         background-color: #007bff;
         color: white;
-        padding: 10px 20px;
+        padding: 12px 24px;
         border: none;
-        border-radius: 4px;
+        border-radius: 5px;
         cursor: pointer;
         font-size: 1.1rem;
         width: 100%;
         max-width: 300px;
-        margin-top: 10px;
+        transition: background-color 0.3s;
     }
 
     .primary-button:hover {
         background-color: #0056b3;
     }
 
-    .alternative-option {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-top: 40px;
-    }
-
-    .alternative-option span {
-        margin-right: 10px;
-    }
-
-    .secondary-button {
-        background-color: transparent;
-        color: #007bff;
-        padding: 5px 10px;
-        border: 1px solid #007bff;
+    .logout-button {
+        background-color: white;
+        color: red;
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        font-size: 1rem;
+        padding: 8px 16px;
         border-radius: 4px;
+        border: 2px solid red;
         cursor: pointer;
     }
 
-    .secondary-button:hover {
-        background-color: #007bff;
+    .logout-button:hover {
+        background-color: red;
         color: white;
     }
 
-    .error-label {
-        color: red;
-        margin-bottom: 10px;
+    .alert {
+        font-size: 0.9rem;
+        padding: 10px;
+        border-radius: 5px;
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .alert-danger {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #dc3545;
+    }
+
+    .alert-success {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #28a745;
     }
 </style>
+    
