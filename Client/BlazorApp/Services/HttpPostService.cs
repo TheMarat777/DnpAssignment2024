@@ -87,7 +87,7 @@ public class HttpPostService : IPostService
             throw new Exception(content);
         }
 
-        Console.WriteLine("API Response: " + content); // Log the raw response content
+        Console.WriteLine("API Response: " + content);
 
         return JsonSerializer.Deserialize<PostWithCommentsDTO>(content, new JsonSerializerOptions
         {
@@ -106,8 +106,7 @@ public class HttpPostService : IPostService
             }
             response.EnsureSuccessStatusCode();
             var comments = await response.Content.ReadFromJsonAsync<List<CommentDto>>();
-
-            // Log the comments to verify the bodies
+            
             foreach (var comment in comments)
             {
                 Console.WriteLine($"Comment ID: {comment.Id}, Body: {comment.Body}, UserId: {comment.UserId}, PostId: {comment.PostId}");

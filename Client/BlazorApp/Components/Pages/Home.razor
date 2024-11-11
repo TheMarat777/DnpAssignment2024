@@ -20,6 +20,17 @@
     </AuthorizeView>
 </div>
 
+@code {
+
+    private async Task Logout()
+    {
+        var authProvider = (SimpleAuthProvider)AuthenticationStateProvider;
+        await authProvider.Logout();
+        NavMgr.NavigateTo("login");
+    }
+
+}
+
 <style>
     html, body {
         height: 100%;
@@ -40,7 +51,7 @@
         padding: 20px;
         padding-top: 50px;
         overflow: hidden;
-        position: relative; /* To position the logout button */
+        position: relative;
     }
 
     .page-title {
@@ -93,14 +104,3 @@
         color: white;
     }
 </style>
-
-@code {
-
-    private async Task Logout()
-    {
-        var authProvider = (SimpleAuthProvider)AuthenticationStateProvider;
-        await authProvider.Logout();
-        NavMgr.NavigateTo("login");
-    }
-
-}
