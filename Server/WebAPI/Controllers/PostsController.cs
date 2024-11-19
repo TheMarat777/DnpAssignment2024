@@ -117,28 +117,36 @@ public class PostsController : ControllerBase
     }
     
     // GET https://localhost:7207/Posts
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<PostDto>>> GetManyPosts()
+    [HttpPost]
+    public async Task<ActionResult<PostDto>> AddPost(CreatePostDto createPostDto)
     {
         try
         {
-            var posts = await postRepository.GetManyPostsAsync();
-        
-            var postDtos = posts.Select(post => new PostDto
+            var post = new Post
             {
-                Id = post.Id,
-                Title = post.Title,
-                Content = post.Content,
-                UserId = post.UserId,
-            }).ToList();
-        
-            return Ok(postDtos);
+                Title = createPostDto.Title,
+                Content = createPostDto.Content,
+                UserId = createPostDto.UserId
+            };
+            
+            var addedPost = await postRepository.AddPostAsync(post);
+            
+            var postDto = new PostDto
+            {
+                Id = addedPost.Id,
+                Title = addedPost.Title,
+                Content = addedPost.Content,
+                UserId = addedPost.UserId
+            };
+
+            return Ok(postDto);
         }
         catch (Exception e)
         {
-            return StatusCode(500, "An error occurred while retrieving posts.");
+            return StatusCode(500, "Failed to add post: " + e.Message);
         }
     }
+
 
     
     // DELETE https://localhost:7207/Posts/{id}

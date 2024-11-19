@@ -54,6 +54,23 @@ public class CommentFileRepository : ICommentRepository
         await File.WriteAllTextAsync(filePath, commentsAsJson);
         return comment;
     }
+    
+    public async Task UpdateCommentAsync(Comment comment)
+    {
+        var comments = await LoadCommentsAsync();
+        var existingComment = comments.SingleOrDefault(c => c.Id == comment.Id);
+
+        if (existingComment != null)
+        {
+            existingComment.Body = comment.Body;
+            existingComment.UserId = comment.UserId;
+            existingComment.PostId = comment.PostId;
+        }
+        else
+        {
+            throw new InvalidDataException($"Comment with id {comment.Id} could not be found.");
+        }
+    }
 
     public async Task DeleteCommentAsync(int commentId)
     {
@@ -109,22 +126,5 @@ public class CommentFileRepository : ICommentRepository
         List<Comment> comments = await LoadCommentsAsync();
         var filteredComments = comments.Where(c => c.PostId == postId).ToList();
         return filteredComments;
-    }
-
-    public async Task UpdateCommentAsync(Comment comment)
-    {
-        var comments = await LoadCommentsAsync();
-        var existingComment = comments.SingleOrDefault(c => c.Id == comment.Id);
-
-        if (existingComment != null)
-        {
-            existingComment.Body = comment.Body;
-            existingComment.UserId = comment.UserId;
-            existingComment.PostId = comment.PostId;
-        }
-        else
-        {
-            throw new InvalidDataException($"Comment with id {comment.Id} could not be found.");
-        }
     }
 }
