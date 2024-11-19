@@ -19,14 +19,14 @@ namespace CLI.UI.ManageComments;
                 return;
             }
 
-            var comment = await commentRepository.GetSingleAsync(commentId);
+            var comment = await commentRepository.GetSingleCommentAsync(commentId);
             if (comment == null)
             {
                 Console.WriteLine($"Comment with ID {commentId} not found.");
                 return;
             }
 
-            await commentRepository.DeleteAsync(commentId);
+            await commentRepository.DeleteCommentAsync(commentId);
             Console.WriteLine($"Comment with ID {commentId} deleted successfully.");
         }
     }

@@ -117,7 +117,7 @@ public class UserFileRepository : IUserRepository
         }
     }
 
-    public async Task<User> UpdateUserAsync(User user)
+    public async Task UpdateUserAsync(User user)
     {
         var users = await LoadUsersAsync();
         var existingUser = users.SingleOrDefault(u => u.Id == user.Id);
@@ -133,7 +133,5 @@ public class UserFileRepository : IUserRepository
         {
             throw new InvalidOperationException("User not found.");
         }
-
-        return user;
     }
 }

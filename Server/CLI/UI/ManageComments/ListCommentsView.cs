@@ -12,7 +12,7 @@ namespace CLI.UI.ManageComments;
 
         public async Task ShowAsync()
         {
-            var comments = await commentRepository.GetManyAsync();
+            var comments = await commentRepository.GetManyCommentsAsync();
             if (comments.Any())
             {
                 Console.WriteLine("\nComments: ");

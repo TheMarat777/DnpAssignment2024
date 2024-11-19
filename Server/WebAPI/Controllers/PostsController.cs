@@ -61,35 +61,39 @@ public class PostsController : ControllerBase
     [HttpPut("{id}")]
     public async Task<ActionResult<PostDto>> UpdatePost(int id, [FromBody] CreatePostDto request)
     {
+        
         Post existingPost = await postRepository.GetSinglePostAsync(id);
         if (existingPost == null)
         {
             return NotFound();
         }
-
-        await VerifyUserExistAsync(request.UserId);
         
+        await VerifyUserExistAsync(request.UserId);
+
         User user = await userRepository.GetSingleUserAsync(request.UserId);
         if (user == null)
         {
             return NotFound("User not found.");
         }
+        
         existingPost.Title = request.Title;
         existingPost.Content = request.Content;
         existingPost.UserId = user.Id;
         
-        Post updatedPost = await postRepository.UpdatePostAsync(existingPost);
-
+        await postRepository.UpdatePostAsync(existingPost);
+        
         PostDto postDto = new PostDto()
         {
-            Id = updatedPost.Id,
-            Title = updatedPost.Title,
-            Content = updatedPost.Content,
-            UserId = updatedPost.UserId,
-            Likes = updatedPost.Likes
+            Id = existingPost.Id,
+            Title = existingPost.Title,
+            Content = existingPost.Content,
+            UserId = existingPost.UserId,
+            Likes = existingPost.Likes
         };
+
         return Ok(postDto);
     }
+
     
     // GET https://localhost:7207/Posts/{id}
     [HttpGet("{id}")]

@@ -68,13 +68,13 @@ public class UsersController : ControllerBase
         existingUser.Username = request.UserName;
         existingUser.Password = request.Password;
         
-        User updatedUser = await userRepository.UpdateUserAsync(existingUser);
+        await userRepository.UpdateUserAsync(existingUser);
 
         UserDto userDto = new UserDto
         {
-            Id = updatedUser.Id,
-            UserName = updatedUser.Username
-        };
+            Id = existingUser.Id,
+            UserName = existingUser.Username
+        };  
         return Ok(userDto);
     }
 

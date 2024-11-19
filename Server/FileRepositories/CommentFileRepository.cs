@@ -44,7 +44,7 @@ public class CommentFileRepository : ICommentRepository
         }
     }
 
-    public async Task<Comment> AddAsync(Comment comment)
+    public async Task<Comment> AddCommentAsync(Comment comment)
     {
         string commentsAsJson = await File.ReadAllTextAsync(filePath);
         List<Comment> comments = JsonSerializer.Deserialize<List<Comment>>(commentsAsJson) !;
@@ -55,7 +55,7 @@ public class CommentFileRepository : ICommentRepository
         return comment;
     }
 
-    public async Task DeleteAsync(int commentId)
+    public async Task DeleteCommentAsync(int commentId)
     {
         var comments = await LoadCommentsAsync();
         var comment = comments.SingleOrDefault(c => c.Id == commentId);
@@ -71,7 +71,7 @@ public class CommentFileRepository : ICommentRepository
         }
     }
 
-    public async Task<Comment> GetSingleAsync(int commentId)
+    public async Task<Comment> GetSingleCommentAsync(int commentId)
     {
         var comments = await LoadCommentsAsync();
         var comment = comments.SingleOrDefault(c => c.Id == commentId);
@@ -86,7 +86,7 @@ public class CommentFileRepository : ICommentRepository
         }
     }
 
-    public async Task<IEnumerable<Comment>> GetManyAsync()
+    public async Task<IEnumerable<Comment>> GetManyCommentsAsync()
     {
         try
         {
@@ -111,7 +111,7 @@ public class CommentFileRepository : ICommentRepository
         return filteredComments;
     }
 
-    public async Task<Comment> UpdateAsync(Comment comment)
+    public async Task UpdateCommentAsync(Comment comment)
     {
         var comments = await LoadCommentsAsync();
         var existingComment = comments.SingleOrDefault(c => c.Id == comment.Id);
@@ -121,7 +121,6 @@ public class CommentFileRepository : ICommentRepository
             existingComment.Body = comment.Body;
             existingComment.UserId = comment.UserId;
             existingComment.PostId = comment.PostId;
-            return existingComment;
         }
         else
         {

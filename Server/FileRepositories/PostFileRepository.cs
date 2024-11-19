@@ -106,7 +106,7 @@ public class PostFileRepository : IPostRepository
         }
     }
 
-    public async Task<Post> UpdatePostAsync(Post post)
+    public async Task UpdatePostAsync(Post post)
     {
         var posts = await LoadPostsAsync();
         var existingPost = posts.SingleOrDefault(p => p.Id == post.Id);
@@ -123,6 +123,5 @@ public class PostFileRepository : IPostRepository
         {
             throw new InvalidOperationException($"Post with id {post.Id} was not found");
         }
-        return existingPost;
     }
 }

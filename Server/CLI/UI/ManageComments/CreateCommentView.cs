@@ -31,7 +31,7 @@ namespace CLI.UI.ManageComments;
             }
 
             var comment = new Comment(body, postId, userId);
-            var createdComment = await commentRepository.AddAsync(comment);
+            var createdComment = await commentRepository.AddCommentAsync(comment);
 
             Console.WriteLine($"Comment added successfully with ID: {createdComment.Id}");
         }

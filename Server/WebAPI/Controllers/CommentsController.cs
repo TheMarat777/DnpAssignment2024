@@ -57,7 +57,7 @@ public class CommentsController : ControllerBase
                 UserId = request.UserId
             };
             
-            await commentRepository.AddAsync(comment);
+            await commentRepository.AddCommentAsync(comment);
             return Results.Created($"comments/{comment.Id}", comment);
             
     }
@@ -66,7 +66,7 @@ public class CommentsController : ControllerBase
     [HttpPut("{id}")]
     public async Task<ActionResult<CommentDto>> UpdateComment(int id, [FromBody] CreateCommentDto request)
     {
-        Comment existingComment = await commentRepository.GetSingleAsync(id);
+        Comment existingComment = await commentRepository.GetSingleCommentAsync(id);
         if (existingComment.UserId != request.UserId)
         {
             await VerifyUserExistAsync(request.UserId);
@@ -76,15 +76,14 @@ public class CommentsController : ControllerBase
         existingComment.Body = request.Body;
         existingComment.UserId = request.UserId;
         existingComment.PostId = request.PostId;
-
-        Comment updatedComment = await commentRepository.UpdateAsync(existingComment);
+        
 
         CommentDto commentDto = new CommentDto()
         {
-            Id = updatedComment.Id,
-            Body = updatedComment.Body,
-            UserId = updatedComment.UserId,
-            PostId = updatedComment.PostId
+            Id = existingComment.Id,
+            Body = existingComment.Body,
+            UserId = existingComment.UserId,
+            PostId = existingComment.PostId
         };
 
         return Ok(commentDto);
@@ -94,7 +93,7 @@ public class CommentsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<CommentDto>> GetSingleComment(int id)
     {
-        Comment comment = await commentRepository.GetSingleAsync(id);
+        Comment comment = await commentRepository.GetSingleCommentAsync(id);
         if (comment == null)
         {
             return NotFound();
@@ -118,7 +117,7 @@ public class CommentsController : ControllerBase
     {
         try
         {
-            var comments = await commentRepository.GetManyAsync();
+            var comments = await commentRepository.GetManyCommentsAsync();
 
             var commentsDtos = comments.Select(comment => new CommentDto
             {
@@ -142,13 +141,13 @@ public class CommentsController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<ActionResult<CommentDto>> DeleteComment(int id)
     {
-        Comment existingComment = await commentRepository.GetSingleAsync(id);
+        Comment existingComment = await commentRepository.GetSingleCommentAsync(id);
         if (existingComment == null)
         {
             return NotFound();
         }
         
-        await commentRepository.DeleteAsync(id);
+        await commentRepository.DeleteCommentAsync(id);
         return NoContent();
     }
 }

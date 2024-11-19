@@ -19,7 +19,7 @@ namespace CLI.UI.ManageComments;
                 return;
             }
 
-            var comment = await commentRepository.GetSingleAsync(commentId);
+            var comment = await commentRepository.GetSingleCommentAsync(commentId);
             if (comment == null)
             {
                 Console.WriteLine($"Comment with ID {commentId} not found.");
@@ -31,7 +31,7 @@ namespace CLI.UI.ManageComments;
             string newBody = Console.ReadLine();
 
             comment.Body = newBody;
-            await commentRepository.UpdateAsync(comment);
+            await commentRepository.UpdateCommentAsync(comment);
 
             Console.WriteLine($"Comment with ID {commentId} updated successfully.");
         }
